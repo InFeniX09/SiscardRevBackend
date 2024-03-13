@@ -10,6 +10,8 @@ import { connect, db } from "../db/connection";
 class Server {
   private app: express.Application;
   private port: String;
+  private hostname: String;
+
 
   private paths = {
     auth: "/auth",
@@ -22,6 +24,7 @@ class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || "3100";
+    this.hostname = "190.223.47.66";
     this.midlewares();
     this.routes();
   }
