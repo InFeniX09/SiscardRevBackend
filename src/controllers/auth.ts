@@ -157,7 +157,7 @@ export const logout = async (req = request, res = response) => {
 };
 
 export const buscarUsuario = async (req = request, res = response) => {
-  const { pUsuario } = req.query;
+  const { pUsuario } = req.body;
 
   const Query3 = await Usuario.findOne({
     raw: true,

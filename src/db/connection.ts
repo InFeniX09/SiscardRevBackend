@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 
 export const db: Sequelize[] = [];
 
-const SiscardForge= new Sequelize('SiscardRevolution','sa','S1sc4rd#01',{
+const SiscardRevolution= new Sequelize('SiscardRevolution','sa','S1sc4rd#01',{
     dialect:'mssql',
     host:'172.17.7.39',
     timezone: '',
@@ -14,12 +14,13 @@ const SiscardForge= new Sequelize('SiscardRevolution','sa','S1sc4rd#01',{
     },
 })
 
-db.push(SiscardForge);
+db.push(SiscardRevolution);
+export default SiscardRevolution
 
 export const connect = async () => {
     // De la base Halcon se consultan los autorizadores
     try {
-        await SiscardForge.authenticate()
+        await SiscardRevolution.authenticate()
         console.log('Base de datos Halcon online')
     } catch (error) {
         console.log('Base de datos Halcon offline');
