@@ -4,7 +4,7 @@ const router= Router();
 /*SISCARDFORGE*/
 router.post('/login',login)
 router.get('/logout',logout)
-router.get('/buscarUsuario',buscarUsuario)
+router.post('/buscarUsuario',buscarUsuario)
 
 
 export default router;  

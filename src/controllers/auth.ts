@@ -157,9 +157,9 @@ export const logout = async (req = request, res = response) => {
 };
 
 export const buscarUsuario = async (req = request, res = response) => {
-  const { pUsuario } = req.query;
+  const { pUsuario } = req.body;
 
-  const Query3 = await Usuario.findAll({
+  const Query3 = await Usuario.findOne({
     raw: true,
     attributes: ["IdUsuario", "Usuario", "Contrasena", "Correo", "Telefono","FcIngreso","FcBaja"],
     where: {
