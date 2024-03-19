@@ -1,6 +1,6 @@
 import { Request, Response, request, response } from "express";
 import Ticket from "../models/ticket";
-import { Op, Sequelize } from "sequelize";
+import  db  from "../db/connection";
 
 
 //Listo
@@ -75,3 +75,28 @@ export const crearTicket = async (req = request, res = response) => {
     });
   }
 };
+
+//Listo
+export const listarTicketEstadoxFecha = async (req: Request, res: Response) => {
+  try {
+      const { DiasAtras } = req.query; // Obtén el valor de idTipoMarca de la consulta
+
+      const [results, metadata] = await db.query('EXEC FiltrarTicketsPorFecha :DiasAtras', {
+          replacements: { DiasAtras }, // Pasar el valor del parámetro
+      });
+
+      // Extrae la lista de marcas del resultado
+      const selectmarca = results.map((result: any) => ({
+          Dia: result.Dia,
+          Titulo: result.Titulo,
+          cantidad: result.cantidad
+      }));
+
+      res.json(selectmarca);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({
+          msg: 'Ocurrió un error al obtener las marcas.'
+      });
+  }
+}
