@@ -4,6 +4,7 @@ import authRouth from "../routes/auth";
 import infraestructuraRouth from "../routes/infraestructura";
 import CentroAtencionRouth from "../routes/centro-atencion";
 import InventarioDepartamentalRouth from "../routes/inventario-departamental";
+import SelectRouth from "../routes/select";
 
 import { connect, db } from "../db/connection";
 
@@ -18,7 +19,7 @@ class Server {
     infraestructura: "/infraestructura",
     CentroAtencion: "/centro-atencion",
     InventarioDepartamental: "/inventario-departamental",
-
+    Select: "/select",
   };
 
   constructor() {
@@ -40,6 +41,7 @@ class Server {
     this.app.use(this.paths.infraestructura, infraestructuraRouth);
     this.app.use(this.paths.CentroAtencion, CentroAtencionRouth);
     this.app.use(this.paths.InventarioDepartamental, InventarioDepartamentalRouth);
+    this.app.use(this.paths.Select, SelectRouth);
 
   }
 
