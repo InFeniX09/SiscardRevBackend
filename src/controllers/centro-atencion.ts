@@ -10,7 +10,7 @@ export const listarTicket = async (req = request, res = response) => {
     raw: true,
     attributes: [
       "IdTicket",
-      "Titulo",
+      "Asunto",
       "Descripcion",
       "idUsuario",
     ],
@@ -44,13 +44,20 @@ export const listarTicket = async (req = request, res = response) => {
 
 //Listo
 export const crearTicket = async (req = request, res = response) => {
-  let ptitulo = req.body.Titulo?.toString();
+  let pasunto = req.body.Asunto?.toString();
   let pdescripcion = req.body.Descripcion?.toString();
+  let pidUsuario = req.body.idUsuario ? parseInt(req.body.idUsuario) : null;
+  let pidArea = req.body.idArea ? parseInt(req.body.idArea) : null;
+  let pidTicketcc = req.body.idTicketcc ? parseInt(req.body.idTicketcc) : null;
+  let pidPrioridad = req.body.idPrioridad ? parseInt(req.body.idPrioridad) : null;
 
   const Query3 = await Ticket.create({
-    Titulo: ptitulo,
+    Asunto: pasunto,
     Descripcion: pdescripcion,
-    
+    idUsuario: pidUsuario,
+    idArea:pidArea,
+    idTicketcc:pidTicketcc,
+    idPrioridad:pidPrioridad
   });
 
   if (Query3) {
@@ -88,7 +95,7 @@ export const listarTicketEstadoxFecha = async (req: Request, res: Response) => {
       // Extrae la lista de marcas del resultado
       const selectmarca = results.map((result: any) => ({
           Dia: result.Dia,
-          Titulo: result.Titulo,
+          Asunto: result.Asunto,
           cantidad: result.cantidad
       }));
 

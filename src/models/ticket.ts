@@ -9,7 +9,7 @@ const Ticket = db[0].define(
       primaryKey: true,
       autoIncrement: true,
     },
-    Titulo: {
+    Asunto: {
       type: DataTypes.STRING,
     },
     Descripcion: {
@@ -22,6 +22,9 @@ const Ticket = db[0].define(
       type: DataTypes.INTEGER,
     },
     idResponsable: {
+      type: DataTypes.INTEGER,
+    },
+    idTicketcc: {
       type: DataTypes.INTEGER,
     },
     FcCreacion: {
