@@ -17,6 +17,7 @@
     "mysql2": "^3.6.0",
     "sequelize": "^6.32.1",
     "simple-node-logger": "^21.8.12",
+    "socket.io": "^4.7.5",
     "tedious": "^16.4.0",
     "underscore": "^1.13.6"
   },

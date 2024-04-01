@@ -6,7 +6,7 @@ const app = async () => {
     try {
         const server = new Server()
         await server.dbConnect()
-        server.listen()
+        server.execute()
     } catch (error) {
         console.log(error)
         throw new Error(error as string);
