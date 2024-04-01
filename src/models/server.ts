@@ -6,10 +6,8 @@ import infraestructuraRouth from "../routes/infraestructura";
 import CentroAtencionRouth from "../routes/centro-atencion";
 import SelectRouth from "../routes/select";
 import InventarioDepartamentalRouth from "../routes/inventario-departamental";
-
 import { connect } from "../db/connection";
-import socketio from "socket.io";
-import Sockets from "./sockets";
+
 
 class Server {
   private app: express.Application;
@@ -29,7 +27,6 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || "3100";
     this.server = http.createServer(this.app);
-    this.io = socketio(this.server,{})
   }
 
   midlewares() {
@@ -38,10 +35,7 @@ class Server {
     this.app.use(express.static("public"));
   }
 
-  configurarSockets() {
-    new Sockets(this.io);
-  }
-
+ 
   routes() {
     this.app.use(this.paths.auth, authRouth);
     this.app.use(this.paths.infraestructura, infraestructuraRouth);
@@ -67,11 +61,11 @@ class Server {
   execute() {
     this.midlewares();
     this.routes();
-    this.configurarSockets();
     this.server.listen(this.port, () => {
       console.log("Servidor corriendo en puerto " + this.port);
     });
   }
+
 }
 
 export default Server;
