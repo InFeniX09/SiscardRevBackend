@@ -29,6 +29,12 @@ const Menu = db[0].define(
     Estado: {
       type: DataTypes.STRING,
     },
+    UltimaFechMod: {
+      type: DataTypes.DATE,
+    },
+    UltimoUserMod: {
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,

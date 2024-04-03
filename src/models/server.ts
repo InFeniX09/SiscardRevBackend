@@ -1,6 +1,7 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
+import menuRouth from "../routes/menu";
 import authRouth from "../routes/auth";
 import infraestructuraRouth from "../routes/infraestructura";
 import CentroAtencionRouth from "../routes/centro-atencion";
@@ -10,32 +11,35 @@ import { connect } from "../db/connection";
 
 
 class Server {
+  //Variables para definir el servidor
   private app: express.Application;
   private port: String;
   private server:  http.Server;
   private io: any;
 
+  //Variables de rutas
   private paths = {
     auth: "/auth",
     infraestructura: "/infraestructura",
     CentroAtencion: "/centro-atencion",
     InventarioDepartamental: "/inventario-departamental",
     Select: "/select",
+    Menu:"/menu"
   };
-
+  //Inicializador  
   constructor() {
     this.app = express();
     this.port = process.env.PORT || "3100";
     this.server = http.createServer(this.app);
   }
-
+  //Intermediario
   midlewares() {
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.static("public"));
   }
 
- 
+ //Rutas
   routes() {
     this.app.use(this.paths.auth, authRouth);
     this.app.use(this.paths.infraestructura, infraestructuraRouth);
@@ -45,8 +49,10 @@ class Server {
       InventarioDepartamentalRouth
     );
     this.app.use(this.paths.Select, SelectRouth);
-  }
+    this.app.use(this.paths.Menu, menuRouth);
 
+  }
+  //Conexion a la base de datos
   async dbConnect() {
     try {
       await connect();
@@ -57,7 +63,7 @@ class Server {
       throw error;
     }
   }
-
+  //Funcion que ejecuta todo
   execute() {
     this.midlewares();
     this.routes();

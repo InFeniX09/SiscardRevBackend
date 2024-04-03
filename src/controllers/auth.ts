@@ -158,10 +158,18 @@ export const logout = async (req = request, res = response) => {
 
 export const buscarUsuario = async (req = request, res = response) => {
   const { pUsuario } = req.body;
+  Usuario.belongsTo(Persona, { foreignKey: "idPersona" });
 
   const Query3 = await Usuario.findOne({
     raw: true,
-    attributes: ["IdUsuario", "Usuario", "Contrasena", "Correo", "Telefono","FcIngreso","FcBaja"],
+    attributes: ["IdUsuario", "Usuario", "Contrasena", "Correo", "Telefono","FcIngreso","FcBaja","Persona.idPuesto"],
+    include: [
+      {
+        model: Persona,
+        attributes: [],
+        required: true,
+      },
+    ],
     where: {
       Estado: "A",
       Usuario:pUsuario
