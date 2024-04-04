@@ -12,7 +12,7 @@ const Usuario = db[0].define(
     Usuario: {
       type: DataTypes.STRING,
     },
-    Contrasena: {
+    Clave: {
       type: DataTypes.STRING,
     },
     Correo: {
@@ -27,10 +27,19 @@ const Usuario = db[0].define(
     FcBaja: {
       type: DataTypes.DATE,
     },
-    idPersona: {
+    RutaImagen: {
+      type: DataTypes.STRING,
+    },
+    Entidad_id: {
       type: DataTypes.INTEGER,
     },
     Estado: {
+      type: DataTypes.STRING,
+    },
+    UltimaFechMod: {
+      type: DataTypes.DATE,
+    },
+    UltimoUserMod: {
       type: DataTypes.STRING,
     },
   },

@@ -7,7 +7,9 @@ import infraestructuraRouth from "../routes/infraestructura";
 import CentroAtencionRouth from "../routes/centro-atencion";
 import SelectRouth from "../routes/select";
 import InventarioDepartamentalRouth from "../routes/inventario-departamental";
+import LogisticaRouth from "../routes/logistica";
 import { connect } from "../db/connection";
+import { connectPoas } from "../db/connectionPoas";
 
 
 class Server {
@@ -24,7 +26,9 @@ class Server {
     CentroAtencion: "/centro-atencion",
     InventarioDepartamental: "/inventario-departamental",
     Select: "/select",
-    Menu:"/menu"
+    Menu:"/menu",
+    Logistica:"/Logistica"
+
   };
   //Inicializador  
   constructor() {
@@ -50,12 +54,14 @@ class Server {
     );
     this.app.use(this.paths.Select, SelectRouth);
     this.app.use(this.paths.Menu, menuRouth);
+    this.app.use(this.paths.Logistica, LogisticaRouth);
 
   }
   //Conexion a la base de datos
   async dbConnect() {
     try {
       await connect();
+      await connectPoas();
       console.log("Bases de datos online");
     } catch (error) {
       console.log("Bases de datos offline");

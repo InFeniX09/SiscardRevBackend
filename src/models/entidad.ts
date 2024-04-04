@@ -1,14 +1,13 @@
 import { DataTypes } from "sequelize";
 import { db } from "../db/connection";
 
-const Persona = db[0].define(
-  "Persona",
+const Entidad = db[0].define(
+  "Entidad",
   {
-    IdPersona: {
+    IdEntidad: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-
     },
     Nombres: {
       type: DataTypes.STRING,
@@ -19,13 +18,19 @@ const Persona = db[0].define(
     NombreCompleto: {
       type: DataTypes.STRING,
     },
-    Documento: {
-      type: DataTypes.STRING,
-    },
-    idTipoDocumento: {
+    TipoDocumento_id: {
       type: DataTypes.NUMBER,
     },
+    NroDocumento: {
+      type: DataTypes.STRING,
+    },
     Correo: {
+      type: DataTypes.STRING,
+    },
+    Telefono: {
+      type: DataTypes.STRING,
+    },
+    Direccion: {
       type: DataTypes.STRING,
     },
     Genero: {
@@ -34,16 +39,28 @@ const Persona = db[0].define(
     FcNacimiento: {
       type: DataTypes.DATE,
     },
-    Telefono: {
-      type: DataTypes.STRING,
-    },
-    idArea: {
+    Area_id: {
       type: DataTypes.INTEGER,
     },
-    idPuesto: {
+    Puesto_id: {
       type: DataTypes.INTEGER,
+    },
+    TipoEntidad_id: {
+      type: DataTypes.INTEGER,
+    },
+    FcIngreso: {
+      type: DataTypes.DATE,
+    },
+    FcBaja: {
+      type: DataTypes.DATE,
     },
     Estado: {
+      type: DataTypes.STRING,
+    },
+    UltimaFechMod: {
+      type: DataTypes.DATE,
+    },
+    UltimoUserMod: {
       type: DataTypes.STRING,
     },
   },
@@ -53,4 +70,4 @@ const Persona = db[0].define(
   }
 );
 
-export default Persona;
+export default Entidad;

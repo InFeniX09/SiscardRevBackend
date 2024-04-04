@@ -13,7 +13,7 @@ import EquipoStock from "../models/equipostock";
 import EquipoDescuento from "../models/equipodescuento";
 import TipoMenu from "../models/tipomenu";
 import Color from "../models/color";
-import Persona from "../models/persona";
+import Persona from "../models/entidad";
 import TipoDocumento from "../models/tipodocumento";
 import Area from "../models/area";
 import Puesto from "../models/puesto";

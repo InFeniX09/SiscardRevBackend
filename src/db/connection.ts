@@ -15,15 +15,17 @@ const SiscardRevolution= new Sequelize('SiscardRevolution','sa','S1sc4rd#01',{
 })
 
 db.push(SiscardRevolution);
+
 export default SiscardRevolution
 
+ 
 export const connect = async () => {
     // De la base Halcon se consultan los autorizadores
     try {
         await SiscardRevolution.authenticate()
-        console.log('Base de datos Halcon online')
+        console.log('Base de datos SiscardRevolution online')
     } catch (error) {
-        console.log('Base de datos Halcon offline');
+        console.log('Base de datos SiscardRevolution offline');
         throw error;
     }
 }
