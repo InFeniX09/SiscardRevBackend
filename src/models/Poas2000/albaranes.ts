@@ -5,9 +5,8 @@ const Albaranes = db1[0].define(
   "Albaranes",
   {
     albaran_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       primaryKey: true,
-      autoIncrement: true,
     },
     dFcGeneracion: {
       type: DataTypes.DATE,

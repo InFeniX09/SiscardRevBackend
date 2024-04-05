@@ -1,20 +1,22 @@
 import { DataTypes } from "sequelize";
 import { db1 } from "../../db/connectionPoas";
 
-const Almacenes = db1[0].define(
-  "Almacenes",
+const Zonas = db1[0].define(
+  "Zonas",
   {
-    almacen_id: {
+    zona_id: {
       type: DataTypes.STRING,
       primaryKey: true,
     },
-    sDsAlmacen: {
-      type: DataTypes.DATE,
-    },
-    cliente_id: {
+    sDsCliente: {
       type: DataTypes.STRING,
     },
-    
+    sDsNif: {
+      type: DataTypes.STRING,
+    },
+    sDsDireccion: {
+      type: DataTypes.STRING,
+    }
   },
   {
     freezeTableName: true,
@@ -22,4 +24,4 @@ const Almacenes = db1[0].define(
   }
 );
 
-export default Almacenes;
+export default Zonas;
