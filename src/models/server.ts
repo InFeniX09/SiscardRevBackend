@@ -10,6 +10,7 @@ import InventarioDepartamentalRouth from "../routes/inventario-departamental";
 import LogisticaRouth from "../routes/logistica";
 import { connect } from "../db/connection";
 import { connectPoas } from "../db/connectionPoas";
+import { Server as SocketIOServer } from "socket.io";
 
 
 class Server {
@@ -17,7 +18,7 @@ class Server {
   private app: express.Application;
   private port: String;
   private server:  http.Server;
-  private io: any;
+  private io: SocketIOServer;
 
   //Variables de rutas
   private paths = {
@@ -35,6 +36,12 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || "3100";
     this.server = http.createServer(this.app);
+    this.io = new SocketIOServer(this.server, {
+      cors: {
+        origin: "*", // O puedes especificar los orígenes permitidos aquí
+        methods: ["GET", "POST"], // Métodos permitidos
+      },
+    });
   }
   //Intermediario
   midlewares() {
@@ -73,8 +80,16 @@ class Server {
   execute() {
     this.midlewares();
     this.routes();
+    this.setupSocket();
     this.server.listen(this.port, () => {
       console.log("Servidor corriendo en puerto " + this.port);
+    });
+  }
+
+  private setupSocket() {
+    this.io.on("connection", (socket) => {
+      console.log(`${socket.id} connected.`);
+      // Aquí puedes manejar eventos de socket adicionales
     });
   }
 
