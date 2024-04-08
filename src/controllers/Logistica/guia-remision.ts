@@ -7,6 +7,7 @@ import { Sequelize } from "sequelize";
 import Almacenes from "../../models/Poas2000/almacenes";
 import Zonas from "../../models/Poas2000/zonas";
 import Clientes from "../../models/Poas2000/clientes";
+import componentes from "../../models/Poas2000/componentes";
 
 export const listarAlmacenxAlbaranSalida = async (
   req = request,
@@ -100,13 +101,21 @@ export const listarDetalleAlbaranSalida = async (req = request, res = response) 
   
   const { palbaran_id } = req.body;
 
+  TransitoSalida.belongsTo(componentes, { foreignKey: "componente_id" });
 
   const Query3 = await TransitoSalida.findAll({
     raw: true,
     attributes: [
       "nComponentes",
-      "componente_id",
+      "componente.sDsComponente",
       [Sequelize.literal("CASE WHEN sNmSerie='1' THEN '' ELSE sNmSerie END"), "sNmSerie"]
+    ],
+    include: [
+      {
+        model: componentes,
+        attributes: [],
+        required: true,
+      }
     ],
     where: {
       albaran_id: palbaran_id
