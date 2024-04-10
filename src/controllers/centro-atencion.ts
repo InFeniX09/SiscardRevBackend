@@ -62,7 +62,7 @@ export const listarTicketSocket = async () => {
 
 
 //Listo
-export const crearTicket = async (data:any) => {
+export const crearTicketSocket = async (data:any) => {
   let pasunto = data.Asunto?.toString();
   let pdescripcion = data.Descripcion?.toString();
   let pidUsuario = data.idUsuario ? parseInt(data.idUsuario) : null;

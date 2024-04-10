@@ -11,11 +11,7 @@ import LogisticaRouth from "../routes/logistica";
 import { connect } from "../db/connection";
 import { connectPoas } from "../db/connectionPoas";
 import { Server as SocketIOServer } from "socket.io";
-import {
-  crearTicket,
-  listarTicket,
-  listarTicketSocket,
-} from "../controllers/centro-atencion";
+import Sockets from "../sockets/socket";
 
 class Server {
   //Variables para definir el servidor
@@ -23,6 +19,8 @@ class Server {
   private port: String;
   private server: http.Server;
   private io: SocketIOServer;
+  private sockets: any;
+
 
   //Variables de rutas
   private paths = {
@@ -45,6 +43,7 @@ class Server {
         methods: ["GET", "POST"], // Métodos permitidos
       },
     });
+    this.sockets=new Sockets(this.io)
   }
   //Intermediario
   midlewares() {
@@ -82,28 +81,12 @@ class Server {
   execute() {
     this.midlewares();
     this.routes();
-    this.setupSocket();
     this.server.listen(this.port, () => {
       console.log("Servidor corriendo en puerto " + this.port);
     });
   }
 
-
-  private setupSocket() {
-    let numero = 0; // Inicializa el contador en 0
-
-
-    this.io.on("connection", (socket) => {
-      console.log(`${socket.id} connected.`);
-      socket.on("solicitar-ticket", (data, callback) => {
-        numero++; // Incrementa el contador
-        const ticketNumero = { numero }; // Crea un objeto con el número de ticket
-        callback(ticketNumero);
-      });
-
-
-    });
-  }
+  
 }
 
 export default Server;
