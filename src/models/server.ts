@@ -11,13 +11,17 @@ import LogisticaRouth from "../routes/logistica";
 import { connect } from "../db/connection";
 import { connectPoas } from "../db/connectionPoas";
 import { Server as SocketIOServer } from "socket.io";
-
+import {
+  crearTicket,
+  listarTicket,
+  listarTicketSocket,
+} from "../controllers/centro-atencion";
 
 class Server {
   //Variables para definir el servidor
   private app: express.Application;
   private port: String;
-  private server:  http.Server;
+  private server: http.Server;
   private io: SocketIOServer;
 
   //Variables de rutas
@@ -27,11 +31,10 @@ class Server {
     CentroAtencion: "/centro-atencion",
     InventarioDepartamental: "/inventario-departamental",
     Select: "/select",
-    Menu:"/menu",
-    Logistica:"/Logistica"
-
+    Menu: "/menu",
+    Logistica: "/Logistica",
   };
-  //Inicializador  
+  //Inicializador
   constructor() {
     this.app = express();
     this.port = process.env.PORT || "3100";
@@ -50,7 +53,7 @@ class Server {
     this.app.use(express.static("public"));
   }
 
- //Rutas
+  //Rutas
   routes() {
     this.app.use(this.paths.auth, authRouth);
     this.app.use(this.paths.infraestructura, infraestructuraRouth);
@@ -62,7 +65,6 @@ class Server {
     this.app.use(this.paths.Select, SelectRouth);
     this.app.use(this.paths.Menu, menuRouth);
     this.app.use(this.paths.Logistica, LogisticaRouth);
-
   }
   //Conexion a la base de datos
   async dbConnect() {
@@ -86,21 +88,22 @@ class Server {
     });
   }
 
+
   private setupSocket() {
     let numero = 0; // Inicializa el contador en 0
 
-  this.io.on("connection", (socket) => {
-    console.log(`${socket.id} connected.`);
-    socket.on('solicitar-ticket', (data, callback) => {
-      numero++; // Incrementa el contador
-      const ticketNumero = { numero }; // Crea un objeto con el número de ticket
-      console.log("Solicitando ticket: ", ticketNumero);
-      // Llama a la función de callback con el número de ticket
-      callback(ticketNumero);
-    });
-  });
-  }
 
+    this.io.on("connection", (socket) => {
+      console.log(`${socket.id} connected.`);
+      socket.on("solicitar-ticket", (data, callback) => {
+        numero++; // Incrementa el contador
+        const ticketNumero = { numero }; // Crea un objeto con el número de ticket
+        callback(ticketNumero);
+      });
+
+
+    });
+  }
 }
 
 export default Server;

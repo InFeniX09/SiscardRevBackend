@@ -41,15 +41,34 @@ export const listarTicket = async (req = request, res = response) => {
     });
   }
 };
+export const listarTicketSocket = async () => {  
+
+  const Query3 = await Ticket.findAll({
+    raw: true,
+    attributes: [
+      "IdTicket",
+      "Asunto",
+      "Descripcion",
+      "idUsuario",
+    ],
+    where: {
+      Estado: "A",
+    },   
+  });
+
+ return Query3
+   
+};
+
 
 //Listo
-export const crearTicket = async (req = request, res = response) => {
-  let pasunto = req.body.Asunto?.toString();
-  let pdescripcion = req.body.Descripcion?.toString();
-  let pidUsuario = req.body.idUsuario ? parseInt(req.body.idUsuario) : null;
-  let pidArea = req.body.idArea ? parseInt(req.body.idArea) : null;
-  let pidTicketcc = req.body.idTicketcc ? parseInt(req.body.idTicketcc) : null;
-  let pidPrioridad = req.body.idPrioridad ? parseInt(req.body.idPrioridad) : null;
+export const crearTicket = async (data:any) => {
+  let pasunto = data.Asunto?.toString();
+  let pdescripcion = data.Descripcion?.toString();
+  let pidUsuario = data.idUsuario ? parseInt(data.idUsuario) : null;
+  let pidArea = data.idArea ? parseInt(data.idArea) : null;
+  let pidTicketcc = data.idTicketcc ? parseInt(data.idTicketcc) : null;
+  let pidPrioridad = data.idPrioridad ? parseInt(data.idPrioridad) : null;
 
   const Query3 = await Ticket.create({
     Asunto: pasunto,
@@ -60,27 +79,7 @@ export const crearTicket = async (req = request, res = response) => {
     idPrioridad:pidPrioridad
   });
 
-  if (Query3) {
-    try {
-      console.log(Query3);
-      return res.status(200).json({
-        ok: true,
-        msg: "Informacion Correcta",
-        Query3,
-      });
-    } catch (err) {
-      console.log(err);
-      return res.status(400).json({
-        ok: false,
-        msg: "Error de conexión",
-      });
-    }
-  } else {
-    res.status(401).json({
-      ok: false,
-      msg: "Error de conexión",
-    });
-  }
+  return Query3;
 };
 
 //Listo
