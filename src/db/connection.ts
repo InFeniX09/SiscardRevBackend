@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 
 export const db: Sequelize[] = [];
 
-const SiscardRevolution= new Sequelize('SiscardRevolution','sa','S1sc4rd#01',{
+const SiscardRevolution= new Sequelize('SiscardRevolutionTest','sa','S1sc4rd#01',{
     dialect:'mssql',
     host:'172.17.7.39',
     timezone: '',

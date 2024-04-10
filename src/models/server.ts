@@ -87,10 +87,18 @@ class Server {
   }
 
   private setupSocket() {
-    this.io.on("connection", (socket) => {
-      console.log(`${socket.id} connected.`);
-      // Aquí puedes manejar eventos de socket adicionales
+    let numero = 0; // Inicializa el contador en 0
+
+  this.io.on("connection", (socket) => {
+    console.log(`${socket.id} connected.`);
+    socket.on('solicitar-ticket', (data, callback) => {
+      numero++; // Incrementa el contador
+      const ticketNumero = { numero }; // Crea un objeto con el número de ticket
+      console.log("Solicitando ticket: ", ticketNumero);
+      // Llama a la función de callback con el número de ticket
+      callback(ticketNumero);
     });
+  });
   }
 
 }
