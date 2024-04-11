@@ -68,6 +68,7 @@ export const listarMarca = async (req = request, res = response) => {
     });
   }
 };
+
 export const listarModelo = async (req = request, res = response) => {
   const { pIdMarca, pIdTipoEquipo } = req.query;
 
