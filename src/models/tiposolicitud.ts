@@ -1,25 +1,16 @@
 import { DataTypes } from "sequelize";
 import { db } from "../db/connection";
 
-const Solicitud = db[0].define(
-  "Solicitud",
+const TipoSolicitud = db[0].define(
+  "TipoSolicitud",
   {
-    IdSolicitud: {
+    IdTipoSolicitud: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    TipoSolicitud_id: {
-      type: DataTypes.INTEGER,
-    },
-    TipoMotivo_id: {
-      type: DataTypes.INTEGER,
-    },
-    Usuario_id: {
-      type: DataTypes.INTEGER,
-    },
-    FcCreacion: {
-      type: DataTypes.DATE,
+    TipoSolicitud: {
+      type: DataTypes.STRING,
     },
     Estado: {
       type: DataTypes.STRING,
@@ -37,4 +28,4 @@ const Solicitud = db[0].define(
   }
 );
 
-export default Solicitud;
+export default TipoSolicitud;

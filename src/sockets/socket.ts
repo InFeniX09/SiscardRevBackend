@@ -1,13 +1,14 @@
 import { Server as SocketIOServer } from "socket.io";
 import {
   crearTicketSocket,
-  listarTicketSocket,
+  
 } from "../controllers/centro-atencion";
 import {
   crearMensajeSocket,
   listarUsuarioSocket,
   listarchatSocket,
 } from "../controllers/Extra/chat";
+import { crearSolicitudSocket, listarSolicitud, listarTicketSocket, listarTipoMotivoSocket, listarTipoSolicitudSocket } from "../controllers/Ayuda/solicitud";
 
 class Sockets {
   private io: SocketIOServer;
@@ -22,9 +23,36 @@ class Sockets {
     this.io.on("connection", (socket) => {
       console.log(`${socket.id} connected.`);
 
-      
-
-
+      /*Solicitud PAGE*/
+      socket.on("listar-tiposolicitud", async (data, callback) => {
+        const json = await listarTipoSolicitudSocket();
+        console.log('json',json)
+        callback(json);
+      });
+      socket.on("listar-tipomotivo", async (data, callback) => {
+        const json = await listarTipoMotivoSocket(data);
+        console.log('json',json)
+        callback(json);
+      });
+      socket.on("listar-misolicitud", async (data, callback) => {
+        const json = await listarSolicitud(data);
+        console.log('json',json)
+        callback(json);
+      });
+      socket.on("listar-ticket", async (data, callback) => {
+        const json = await listarTicketSocket();
+        console.log('json',json)
+        callback(json);
+      });
+      socket.on("crear-solicitud", async (data, callback) => {
+        try{
+          const crear = await crearSolicitudSocket(data);
+          callback("si")
+        }catch{
+          callback("no")
+        }        
+      });
+      /**/
 
       socket.on("crear-ticket", async (data, callback) => {
         const data1 = await crearTicketSocket(data);

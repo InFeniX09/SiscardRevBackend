@@ -41,24 +41,7 @@ export const listarTicket = async (req = request, res = response) => {
     });
   }
 };
-export const listarTicketSocket = async () => {  
 
-  const Query3 = await Ticket.findAll({
-    raw: true,
-    attributes: [
-      "IdTicket",
-      "Asunto",
-      "Descripcion",
-      "idUsuario",
-    ],
-    where: {
-      Estado: "A",
-    },   
-  });
-
- return Query3
-   
-};
 
 
 //Listo
