@@ -15,16 +15,16 @@ const Ticket = db[0].define(
     Descripcion: {
       type: DataTypes.STRING,
     },
-    idUsuario: {
+    Usuario_id: {
       type: DataTypes.INTEGER,
     },
-    idArea: {
+    Area_id: {
       type: DataTypes.INTEGER,
     },
-    idResponsable: {
+    Responsable_id: {
       type: DataTypes.INTEGER,
     },
-    idTicketcc: {
+    Tickectcc_id: {
       type: DataTypes.INTEGER,
     },
     FcCreacion: {

@@ -45,25 +45,7 @@ export const listarTicket = async (req = request, res = response) => {
 
 
 //Listo
-export const crearTicketSocket = async (data:any) => {
-  let pasunto = data.Asunto?.toString();
-  let pdescripcion = data.Descripcion?.toString();
-  let pidUsuario = data.idUsuario ? parseInt(data.idUsuario) : null;
-  let pidArea = data.idArea ? parseInt(data.idArea) : null;
-  let pidTicketcc = data.idTicketcc ? parseInt(data.idTicketcc) : null;
-  let pidPrioridad = data.idPrioridad ? parseInt(data.idPrioridad) : null;
 
-  const Query3 = await Ticket.create({
-    Asunto: pasunto,
-    Descripcion: pdescripcion,
-    idUsuario: pidUsuario,
-    idArea:pidArea,
-    idTicketcc:pidTicketcc,
-    idPrioridad:pidPrioridad
-  });
-
-  return Query3;
-};
 
 //Listo
 export const listarTicketEstadoxFecha = async (req: Request, res: Response) => {

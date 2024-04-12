@@ -3,7 +3,7 @@ import { Request, Response, request, response } from "express";
 import Mensaje from "../../models/mensaje";
 import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
-import { Op, Sequelize } from "sequelize";
+import { Op, Sequelize, json } from "sequelize";
 import TipoSolicitud from "../../models/tiposolicitud";
 import TipoMotivo from "../../models/tipomotivo";
 import Solicitud from "../../models/solicitud";
@@ -38,7 +38,7 @@ export const listarTipoMotivoSocket = async (data: any) => {
 
 export const listarSolicitud = async (data: any) => {
   let pUsuario_id = data.Usuario_id;
-
+  
   Solicitud.belongsTo(TipoSolicitud, { foreignKey: "TipoSolicitud_id" });
   Solicitud.belongsTo(TipoMotivo, { foreignKey: "TipoMotivo_id" });
   Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
@@ -98,14 +98,42 @@ export const crearSolicitudSocket = async (data: any) => {
   return Query3;
 };
 
-export const listarTicketSocket = async () => {
+export const listarTicketSocket = async (data: any) => {
+    
+  let pUsuario_id = data.Usuario_id ? parseInt(data.Usuario_id) : null;
+
   const Query3 = await Ticket.findAll({
     raw: true,
-    attributes: ["IdTicket", "Asunto", "Descripcion", "idUsuario"],
+    attributes: ["IdTicket", "Asunto", "Descripcion", "Usuario_id"],
     where: {
       Estado: "A",
+      Usuario_id: {
+        [Op.like]: pUsuario_id
+          ? Sequelize.literal(`ISNULL('${pUsuario_id}', '%')`)
+          : "%",
+      },
     },
   });
 
   return Query3;
 };
+
+export const crearTicketSocket = async (data:any) => {
+    let pasunto = data.Asunto?.toString();
+    let pdescripcion = data.Descripcion?.toString();
+    let pUsuario_id = data.Usuario_id ? parseInt(data.Usuario_id) : null;
+    let pidArea = data.idArea ? parseInt(data.idArea) : null;
+    let pidTicketcc = data.idTicketcc ? parseInt(data.idTicketcc) : null;
+    let pidPrioridad = data.idPrioridad ? parseInt(data.idPrioridad) : null;
+  
+    const Query3 = await Ticket.create({
+      Asunto: pasunto,
+      Descripcion: pdescripcion,
+      idUsuario: pUsuario_id,
+      idArea:pidArea,
+      idTicketcc:pidTicketcc,
+      idPrioridad:pidPrioridad
+    });
+  
+    return Query3;
+  };
