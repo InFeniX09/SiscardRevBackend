@@ -1,8 +1,8 @@
 import { request, response } from "express";
-import Usuario from "../models/usuario";
-import Entidad from "../models/entidad";
-import TransitoSalida from "../models/Poas2000/transitosalida";
-import Albaranes from "../models/Poas2000/albaranes";
+import Usuario from "../../models/usuario";
+import Entidad from "../../models/entidad";
+import TransitoSalida from "../../models/Poas2000/transitosalida";
+import Albaranes from "../../models/Poas2000/albaranes";
 
 export const buscarUsuario = async (req = request, res = response) => {
   const { pUsuario } = req.body;

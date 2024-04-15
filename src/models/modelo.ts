@@ -12,7 +12,7 @@ const Modelo = db[0].define(
     Modelo: {
       type: DataTypes.STRING,
     },
-    idMarca: {
+    Marca_id: {
       type: DataTypes.INTEGER,
     },
     Estado: {

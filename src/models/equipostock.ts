@@ -9,10 +9,10 @@ const EquipoStock = db[0].define(
       primaryKey: true,
       autoIncrement: true,
     },
-    idEquipo: {
+    Equipo_id: {
       type: DataTypes.INTEGER,
     },
-    idUsuario: {
+    Usuario_id: {
       type: DataTypes.INTEGER,
     },
     StockActual: {

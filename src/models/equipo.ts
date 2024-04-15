@@ -5,25 +5,28 @@ const Equipo = db[0].define(
   "Equipo",
   {
     IdEquipo: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        }, 
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     idMarca: {
-          type: DataTypes.INTEGER,
-        }, 
+      type: DataTypes.INTEGER,
+    },
     idModelo: {
-          type: DataTypes.INTEGER,
-        } ,
+      type: DataTypes.INTEGER,
+    },
     idCliente: {
-          type: DataTypes.INTEGER,
-        } ,
+      type: DataTypes.INTEGER,
+    },
     Especificacion: {
-          type: DataTypes.STRING,
-        } ,
+      type: DataTypes.STRING,
+    },
+    Gamma: {
+      type: DataTypes.STRING,
+    },
     Estado: {
-          type: DataTypes.STRING,
-        } 
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,

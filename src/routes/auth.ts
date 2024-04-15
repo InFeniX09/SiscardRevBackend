@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import { buscarUsuario, listarEntidad, listarUsuario, listaralbaran, listarcomponentes } from '../controllers/auth';
+import { buscarUsuario, listarEntidad, listarUsuario, listaralbaran, listarcomponentes } from '../controllers/Auth/auth';
 const router= Router();
 /*SISCARDFORGE*/
 
