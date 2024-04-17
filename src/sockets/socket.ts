@@ -13,7 +13,7 @@ import {
   listarTipoSolicitudSocket,
 } from "../controllers/Ayuda/centro-atencion";
 import { listarEquipoDescuentoSocket, listarEquipoSocket, listarMarcaSocket, listarModeloSocket, listarTipoEquipoSocket } from "../controllers/Logistica/gestion-equipo";
-import { listarEquipoControlSocket, listarEquipoStockSocket } from "../controllers/Logistica/gestion-stock";
+import { listarEquipoControlSocket, listarEquipoSerieSocket, listarEquipoStockSocket } from "../controllers/Logistica/gestion-stock";
 
 class Sockets {
   private io: SocketIOServer;
@@ -106,6 +106,11 @@ class Sockets {
       });
       socket.on("listar-equipodescuento", async (data, callback) => {
         const json = await listarEquipoDescuentoSocket();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-equiposerie", async (data, callback) => {
+        const json = await listarEquipoSerieSocket();
         console.log("json", json);
         callback(json);
       });

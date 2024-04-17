@@ -7,6 +7,7 @@ import Equipo from "../../models/equipo";
 import Modelo from "../../models/modelo";
 import Cliente from "../../models/cliente";
 import EquipoControl from "../../models/equipocontrol";
+import EquipoSerie from "../../models/equiposerie";
 
 export const listarEquipoStockSocket = async () => {
   EquipoStock.belongsTo(Usuario, { foreignKey: "Usuario_id" });
@@ -85,6 +86,59 @@ export const listarEquipoControlSocket = async () => {
       "Observacion",
       "Estado",
 
+    ],
+    include: [
+      {
+        model: Usuario,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Equipo,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+          },
+          {
+            model: Modelo,
+            attributes: [],
+            required: true,
+          },
+          {
+            model: Cliente,
+            attributes: [],
+            required: true,
+          },
+        ],
+      },
+    ],
+    where: {},
+  });
+
+  return Query3;
+};
+
+export const listarEquipoSerieSocket = async () => {
+  EquipoSerie.belongsTo(Equipo, { foreignKey: "Equipo_id" });
+  EquipoSerie.belongsTo(Usuario, { foreignKey: "Usuario_id" });
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+
+  const Query3 = await EquipoSerie.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipoSerie",
+      "Equipo.Cliente.CodCliente",
+      "Equipo.Marca.Marca",
+      "Equipo.Modelo.Modelo",
+      "Usuario.Usuario",
+      "Serie",
+      "Estado",
     ],
     include: [
       {
