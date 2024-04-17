@@ -15,7 +15,7 @@ const EquipoDescuento = db[0].define(
     Tiempo: {
       type: DataTypes.INTEGER,
     },
-    idEquipo: {
+    Equipo_id: {
       type: DataTypes.INTEGER,
     },
     Estado: {

@@ -9,6 +9,7 @@ import TipoEquipo from "../../models/tipoequipo";
 import Modelo from "../../models/modelo";
 import Equipo from "../../models/equipo";
 import Cliente from "../../models/cliente";
+import EquipoDescuento from "../../models/equipodescuento";
 
 export const listarTipoEquipoSocket = async () => {
 
@@ -88,6 +89,49 @@ export const listarEquipoSocket = async () => {
         attributes: [],
         required: true,
       }
+    ],
+    where: {
+      Estado: "A",
+    },
+  });
+
+  return Query3;
+};
+
+export const listarEquipoDescuentoSocket = async () => {
+  EquipoDescuento.belongsTo(Equipo, { foreignKey: "Equipo_id" });
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+
+  const Query3 = await EquipoDescuento.findAll({
+    raw: true,
+    attributes: ["IdEquipoDescuento", "Equipo.Marca.Marca", "Equipo.Modelo.Modelo","Equipo.Cliente.CodCliente",
+    "Tiempo","Precio", "Estado"],
+    include: [
+      {
+        model: Equipo,
+        attributes: [],
+        required: true,
+        include:[
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+          },
+          {
+            model: Modelo,
+            attributes: [],
+            required: true,
+          },
+          {
+            model: Cliente,
+            attributes: [],
+            required: true,
+          }
+        ]
+      },
+      
     ],
     where: {
       Estado: "A",
