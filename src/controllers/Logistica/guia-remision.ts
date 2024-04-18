@@ -8,6 +8,7 @@ import Almacenes from "../../models/Poas2000/almacenes";
 import Zonas from "../../models/Poas2000/zonas";
 import Clientes from "../../models/Poas2000/clientes";
 import componentes from "../../models/Poas2000/componentes";
+import moment from 'moment-timezone';
 
 export const listarAlmacenxAlbaranSalida = async (
   req = request,
@@ -79,13 +80,17 @@ export const listarAlbaranSalidaxZona = async (req: Request, res: Response) => {
         replacements: { zona_id }, // Pasar el valor del parámetro
       }
     );
-
+    const formatDate = (timestamp:Date) => {
+      const date = new Date(timestamp);
+      return date.toLocaleString()
+    };
+   
     // Extrae la lista de marcas del resultado
     const selectmarca = results.map((result: any) => ({
       albaran_id: result.albaran_id,
-      dFcGeneracion: result.dFcGeneracion,
+      dFcGeneracion: formatDate(result.dFcGeneracion),
       usuario_id: result.usuario_id,
-      dFcUltimaImpresion: result.dFcUltimaImpresion,
+      dFcUltimaImpresion:formatDate(result.dFcUltimaImpresion),
     }));
 
     res.json(selectmarca);
