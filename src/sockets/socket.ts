@@ -12,8 +12,19 @@ import {
   listarTipoMotivoSocket,
   listarTipoSolicitudSocket,
 } from "../controllers/Ayuda/centro-atencion";
-import { listarEquipoDescuentoSocket, listarEquipoSocket, listarMarcaSocket, listarModeloSocket, listarTipoEquipoSocket } from "../controllers/Logistica/gestion-equipo";
-import { listarEquipoControlSocket, listarEquipoSerieSocket, listarEquipoStockSocket } from "../controllers/Logistica/gestion-stock";
+import {
+  listarEquipoDescuentoSocket,
+  listarEquipoSocket,
+  listarMarcaSocket,
+  listarModeloSocket,
+  listarTipoEquipoSocket,
+} from "../controllers/Logistica/gestion-equipo";
+import {
+  listarEquipoControlSocket,
+  listarEquipoSerieSocket,
+  listarEquipoStockSocket,
+} from "../controllers/Logistica/gestion-stock";
+import { listarClienteSocket } from "../controllers/Sistemas/gestion-entidad";
 
 class Sockets {
   private io: SocketIOServer;
@@ -40,7 +51,7 @@ class Sockets {
         callback(json);
       });
       socket.on("listar-misolicitud", async (data, callback) => {
-        console.log("quesada",data)
+        console.log("quesada", data);
         const json = await listarSolicitud(data);
         console.log("natael", json);
         callback(json);
@@ -72,7 +83,7 @@ class Sockets {
       });
       /**/
       /*Gestion-Equipo*/
-      
+
       socket.on("listar-tipoequipo", async (data, callback) => {
         const json = await listarTipoEquipoSocket();
         console.log("json", json);
@@ -84,7 +95,7 @@ class Sockets {
         callback(json);
       });
       socket.on("listar-modelo", async (data, callback) => {
-        const json = await listarModeloSocket();
+        const json = await listarModeloSocket(data);
         console.log("json", json);
         callback(json);
       });
@@ -114,8 +125,13 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
+      /*Gestion-Entidad*/
+      socket.on("listar-cliente", async (data, callback) => {
+        const json = await listarClienteSocket();
+        console.log("json", json);
+        callback(json);
+      });
       /**/
-
       socket.on("crear-ticket", async (data, callback) => {
         const data1 = await crearTicketSocket(data);
         const data2 = await listarTicketSocket(data);

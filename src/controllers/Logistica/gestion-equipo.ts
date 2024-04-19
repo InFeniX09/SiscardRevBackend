@@ -12,30 +12,29 @@ import Cliente from "../../models/cliente";
 import EquipoDescuento from "../../models/equipodescuento";
 
 export const listarTipoEquipoSocket = async () => {
+  const Query3 = await TipoEquipo.findAll({
+    raw: true,
+    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
+    where: {
+      Estado: "A",
+    },
+  });
 
-    const Query3 = await TipoEquipo.findAll({
-      raw: true,
-      attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
-      where: {
-        Estado: "A",
-      },
-    });
-  
-    return Query3;
-  };
+  return Query3;
+};
 
 export const listarMarcaSocket = async () => {
   Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
 
   const Query3 = await Marca.findAll({
     raw: true,
-    attributes: ["IdMarca", "Marca","TipoEquipo.TipoEquipo", "Estado"],
+    attributes: ["IdMarca", "Marca", "TipoEquipo.TipoEquipo", "Estado"],
     include: [
       {
         model: TipoEquipo,
         attributes: [],
         required: true,
-      }
+      },
     ],
     where: {
       Estado: "A",
@@ -45,7 +44,9 @@ export const listarMarcaSocket = async () => {
   return Query3;
 };
 
-export const listarModeloSocket = async () => {
+export const listarModeloSocket = async (data: any) => {
+  let pMarca_id = data.Marca_id;
+
   Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
 
   const Query3 = await Modelo.findAll({
@@ -56,10 +57,15 @@ export const listarModeloSocket = async () => {
         model: Marca,
         attributes: [],
         required: true,
-      }
+      },
     ],
     where: {
       Estado: "A",
+      Marca_id: {
+        [Op.like]: pMarca_id
+          ? Sequelize.literal(`ISNULL('${pMarca_id}', '%')`)
+          : "%",
+      },
     },
   });
 
@@ -72,7 +78,15 @@ export const listarEquipoSocket = async () => {
 
   const Query3 = await Equipo.findAll({
     raw: true,
-    attributes: ["IdEquipo", "Marca.Marca", "Modelo.Modelo","Cliente.CodCliente","Especificacion","Gamma", "Estado"],
+    attributes: [
+      "IdEquipo",
+      "Marca.Marca",
+      "Modelo.Modelo",
+      "Cliente.CodCliente",
+      "Especificacion",
+      "Gamma",
+      "Estado",
+    ],
     include: [
       {
         model: Marca,
@@ -88,7 +102,7 @@ export const listarEquipoSocket = async () => {
         model: Cliente,
         attributes: [],
         required: true,
-      }
+      },
     ],
     where: {
       Estado: "A",
@@ -97,7 +111,6 @@ export const listarEquipoSocket = async () => {
 
   return Query3;
 };
-
 export const listarEquipoDescuentoSocket = async () => {
   EquipoDescuento.belongsTo(Equipo, { foreignKey: "Equipo_id" });
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
@@ -106,14 +119,21 @@ export const listarEquipoDescuentoSocket = async () => {
 
   const Query3 = await EquipoDescuento.findAll({
     raw: true,
-    attributes: ["IdEquipoDescuento", "Equipo.Marca.Marca", "Equipo.Modelo.Modelo","Equipo.Cliente.CodCliente",
-    "Tiempo","Precio", "Estado"],
+    attributes: [
+      "IdEquipoDescuento",
+      "Equipo.Marca.Marca",
+      "Equipo.Modelo.Modelo",
+      "Equipo.Cliente.CodCliente",
+      "Tiempo",
+      "Precio",
+      "Estado",
+    ],
     include: [
       {
         model: Equipo,
         attributes: [],
         required: true,
-        include:[
+        include: [
           {
             model: Marca,
             attributes: [],
@@ -128,10 +148,9 @@ export const listarEquipoDescuentoSocket = async () => {
             model: Cliente,
             attributes: [],
             required: true,
-          }
-        ]
+          },
+        ],
       },
-      
     ],
     where: {
       Estado: "A",
