@@ -20,6 +20,7 @@ import {
   listarTipoEquipoSocket,
 } from "../controllers/Logistica/gestion-equipo";
 import {
+  cargaMasivaEquipoSocket,
   listarEquipoControlSocket,
   listarEquipoSerieSocket,
   listarEquipoStockSocket,
@@ -122,6 +123,11 @@ class Sockets {
       });
       socket.on("listar-equiposerie", async (data, callback) => {
         const json = await listarEquipoSerieSocket();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("cargamasiva-equipo", async (data, callback) => {
+        const json = await cargaMasivaEquipoSocket(data);
         console.log("json", json);
         callback(json);
       });
