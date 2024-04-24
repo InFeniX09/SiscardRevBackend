@@ -60,56 +60,56 @@ async function generarPDF(pdatos: any, pdetalle: any) {
 
       for (let i = 0; i < detalle.length; i++) {
         const currentDetail = detalle[i];
-        let yPosition = 255 + 15 * i;
+        let yPosition = 275 + 15 * i;
 
         if (i === 17) {
           // Si llegamos al límite de la primera página, creamos una nueva página
           doc.addPage();
           currentPage = 2; // Actualizamos la página actual
-          doc.fontSize(12).text(formattedDate, 110, 70);
-          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 119, 85);
-          doc.fontSize(10).text(datos.sDsDireccion, 122, 105);
-          doc.fontSize(12).text(datos.sDsCliente, 143, 120);
-          doc.fontSize(12).text(datos.sDsNif, 72, 135);
-          doc.fontSize(12).text(datos.sDsZona, 151, 170);
-          doc.fontSize(12).text(datos.sDsNIF, 76, 185);
-          doc.fontSize(12).text("X", 587, 202);
+          doc.fontSize(12).text(formattedDate, 113, 90);
+          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 122, 105);
+          doc.fontSize(10).text(datos.sDsDireccion, 125, 125);
+          doc.fontSize(12).text(datos.sDsCliente, 146, 140);
+          doc.fontSize(12).text(datos.sDsNif, 75, 155);
+          doc.fontSize(12).text(datos.sDsZona, 154, 190);
+          doc.fontSize(12).text(datos.sDsNIF, 79, 205);
+          doc.fontSize(12).text("X", 590, 222);
         }
         if (i === 0) {
-          doc.fontSize(12).text(formattedDate, 110, 70);
-          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 119, 85);
-          doc.fontSize(10).text(datos.sDsDireccion, 122, 105);
-          doc.fontSize(12).text(datos.sDsCliente, 143, 120);
-          doc.fontSize(12).text(datos.sDsNif, 72, 135);
-          doc.fontSize(12).text(datos.sDsZona, 151, 170);
-          doc.fontSize(12).text(datos.sDsNIF, 76, 185);
-          doc.fontSize(12).text("X", 587, 202);
+          doc.fontSize(12).text(formattedDate, 113, 90);
+          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 122, 105);
+          doc.fontSize(10).text(datos.sDsDireccion, 125, 125);
+          doc.fontSize(12).text(datos.sDsCliente, 146, 140);
+          doc.fontSize(12).text(datos.sDsNif, 75, 155);
+          doc.fontSize(12).text(datos.sDsZona, 154, 190);
+          doc.fontSize(12).text(datos.sDsNIF, 79, 205);
+          doc.fontSize(12).text("X", 590, 222);
         }
 
         if (currentPage === 1) {
           // Agregar a la primera página
-          doc.fontSize(12).text(currentDetail.nComponentes, 55, yPosition);
+          doc.fontSize(12).text(currentDetail.nComponentes, 58, yPosition);
           doc
             .fontSize(12)
             .text(
               currentDetail.sNmSerie !== ""
                 ? `${currentDetail.sDsComponente} | ${currentDetail.sNmSerie}`
                 : currentDetail.sDsComponente,
-              95,
+              98,
               yPosition
             );
         } else {
           // Agregar a la segunda página
           yPosition = 15 * i;
           console.log(yPosition);
-          doc.fontSize(12).text(currentDetail.nComponentes, 55, yPosition);
+          doc.fontSize(12).text(currentDetail.nComponentes, 58, yPosition);
           doc
             .fontSize(12)
             .text(
               currentDetail.sNmSerie !== ""
                 ? `${currentDetail.sDsComponente} | ${currentDetail.sNmSerie}`
                 : currentDetail.sDsComponente,
-              95,
+              98,
               yPosition
             );
         }
