@@ -71,9 +71,9 @@ async function generarPDF(pdatos: any, pdetalle: any) {
           doc.fontSize(10).text(datos.sDsDireccion, 125, 148);
           doc.fontSize(12).text(datos.sDsCliente, 146, 163);
           doc.fontSize(12).text(datos.sDsNif, 75, 177);
-          doc.fontSize(12).text(datos.sDsZona, 152, 213);
-          doc.fontSize(12).text(datos.sDsNIF, 79, 227);
-          doc.fontSize(12).text("X", 585, 247);
+          doc.fontSize(12).text(datos.sDsZona, 152, 210);
+          doc.fontSize(12).text(datos.sDsNIF, 79, 224);
+          doc.fontSize(12).text("X", 545, 247);
         }
         if (i === 0) {
           doc.fontSize(12).text(formattedDate, 113, 115);
@@ -81,9 +81,9 @@ async function generarPDF(pdatos: any, pdetalle: any) {
           doc.fontSize(10).text(datos.sDsDireccion, 125, 148);
           doc.fontSize(12).text(datos.sDsCliente, 146, 163);
           doc.fontSize(12).text(datos.sDsNif, 75, 177);
-          doc.fontSize(12).text(datos.sDsZona, 152, 213);
-          doc.fontSize(12).text(datos.sDsNIF, 79, 227);
-          doc.fontSize(12).text("X", 585, 247);
+          doc.fontSize(12).text(datos.sDsZona, 152, 210);
+          doc.fontSize(12).text(datos.sDsNIF, 79, 224);
+          doc.fontSize(12).text("X", 545, 247); 
         }
 
         if (currentPage === 1) {
