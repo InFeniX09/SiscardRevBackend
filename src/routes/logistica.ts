@@ -60,30 +60,30 @@ async function generarPDF(pdatos: any, pdetalle: any) {
 
       for (let i = 0; i < detalle.length; i++) {
         const currentDetail = detalle[i];
-        let yPosition = 275 + 15 * i;
+        let yPosition = 300 + 15 * i;
 
         if (i === 17) {
           // Si llegamos al límite de la primera página, creamos una nueva página
           doc.addPage();
           currentPage = 2; // Actualizamos la página actual
-          doc.fontSize(12).text(formattedDate, 113, 90);
-          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 122, 105);
-          doc.fontSize(10).text(datos.sDsDireccion, 125, 125);
-          doc.fontSize(12).text(datos.sDsCliente, 146, 140);
-          doc.fontSize(12).text(datos.sDsNif, 75, 155);
-          doc.fontSize(12).text(datos.sDsZona, 154, 190);
-          doc.fontSize(12).text(datos.sDsNIF, 79, 205);
-          doc.fontSize(12).text("X", 590, 222);
+          doc.fontSize(12).text(formattedDate, 113, 115);
+          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 122, 130);
+          doc.fontSize(10).text(datos.sDsDireccion, 125, 150);
+          doc.fontSize(12).text(datos.sDsCliente, 146, 165);
+          doc.fontSize(12).text(datos.sDsNif, 75, 180);
+          doc.fontSize(12).text(datos.sDsZona, 154, 215);
+          doc.fontSize(12).text(datos.sDsNIF, 79, 230);
+          doc.fontSize(12).text("X", 587, 247);
         }
         if (i === 0) {
-          doc.fontSize(12).text(formattedDate, 113, 90);
-          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 122, 105);
-          doc.fontSize(10).text(datos.sDsDireccion, 125, 125);
-          doc.fontSize(12).text(datos.sDsCliente, 146, 140);
-          doc.fontSize(12).text(datos.sDsNif, 75, 155);
-          doc.fontSize(12).text(datos.sDsZona, 154, 190);
-          doc.fontSize(12).text(datos.sDsNIF, 79, 205);
-          doc.fontSize(12).text("X", 590, 222);
+          doc.fontSize(12).text(formattedDate, 113, 115);
+          doc.fontSize(12).text("AV. Aviación 1564 - La Victoria", 122, 130);
+          doc.fontSize(10).text(datos.sDsDireccion, 125, 150);
+          doc.fontSize(12).text(datos.sDsCliente, 146, 165);
+          doc.fontSize(12).text(datos.sDsNif, 75, 180);
+          doc.fontSize(12).text(datos.sDsZona, 154, 215);
+          doc.fontSize(12).text(datos.sDsNIF, 79, 230);
+          doc.fontSize(12).text("X", 587, 247);
         }
 
         if (currentPage === 1) {
