@@ -190,7 +190,7 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
     ];
 
     // Obtiene los IDs de Marca y Modelo
-    const [marcas, modelos,estados] = await Promise.all([
+    const [marcas, modelos, estados] = await Promise.all([
       obtenerIdsMarca(marcasUnicas),
       obtenerIdsModelo(modelosUnicos),
       obtenerEstados(estadosUnicos),
@@ -235,7 +235,6 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
         FcIngreso: today,
         Estado: estados,
         Equipo_id: equipoId,
-        
       };
     });
 
@@ -307,4 +306,49 @@ const obtenerEstados = async (estados: string[]) => {
     console.error("Error al obtener los IDs de los modelos:", error);
     return [];
   }
+};
+
+export const listarEquipoxClasificacionSocket = async () => {
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+
+  const Query3 = await Equipo.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipo",
+      "Cliente.CodCliente",
+      "Marca.Marca",
+      "Modelo.Modelo",
+    ],
+    include: [
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: TipoEquipo,
+            attributes: [],
+            required: true,
+            where: { Clasificacion: "Accesorio" },
+          },
+        ],
+      },
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Cliente,
+        attributes: [],
+        required: true,
+      },
+    ],
+  
+  });
+
+  return Query3;
 };

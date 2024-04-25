@@ -9,13 +9,16 @@ const Equipo = db[0].define(
       primaryKey: true,
       autoIncrement: true,
     },
-    idMarca: {
+    Cliente_id: {
       type: DataTypes.INTEGER,
     },
-    idModelo: {
+    Marca_id: {
       type: DataTypes.INTEGER,
     },
-    idCliente: {
+    Modelo_id: {
+      type: DataTypes.INTEGER,
+    },
+    TipoEquipo_id: {
       type: DataTypes.INTEGER,
     },
     Especificacion: {

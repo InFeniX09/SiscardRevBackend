@@ -15,8 +15,7 @@ import {
 import {
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
-  listarMarcaSocket,
-  listarModeloSocket,
+  listarMarcaxTipoEquipo,
   listarTipoEquipoSocket,
 } from "../controllers/Logistica/gestion-equipo";
 import {
@@ -24,6 +23,7 @@ import {
   listarEquipoControlSocket,
   listarEquipoSerieSocket,
   listarEquipoStockSocket,
+  listarEquipoxClasificacionSocket,
 } from "../controllers/Logistica/gestion-stock";
 import { listarClienteSocket } from "../controllers/Sistemas/gestion-entidad";
 
@@ -90,16 +90,7 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      socket.on("listar-marca", async (data, callback) => {
-        const json = await listarMarcaSocket();
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-modelo", async (data, callback) => {
-        const json = await listarModeloSocket(data);
-        console.log("json", json);
-        callback(json);
-      });
+
       socket.on("listar-equipo", async (data, callback) => {
         const json = await listarEquipoSocket();
         console.log("json", json);
@@ -128,6 +119,18 @@ class Sockets {
       });
       socket.on("cargamasiva-equipo", async (data, callback) => {
         const json = await cargaMasivaEquipoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-equipoxclasificacion", async (data, callback) => {
+        const json = await listarEquipoxClasificacionSocket();
+        console.log("json", json);
+        callback(json);
+      });
+
+
+      socket.on("listar-MarcaxTipoEquipo", async (data, callback) => {
+        const json = await listarMarcaxTipoEquipo();
         console.log("json", json);
         callback(json);
       });
