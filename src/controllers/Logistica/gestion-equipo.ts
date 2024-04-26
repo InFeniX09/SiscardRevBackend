@@ -23,6 +23,39 @@ export const listarTipoEquipoSocket = async () => {
   return Query3;
 };
 
+export const crearTipoEquipoSocket = async (data: any) => {
+  console.log(data);
+  console.log(JSON.stringify(data));
+
+  const Query3 = await TipoEquipo.create({
+    TipoEquipo: data.TipoEquipo,
+    Clasificacion: data.Clasificacion,
+  });
+
+  return Query3;
+};
+
+export const crearMarcaSocket = async (data: any) => {
+  console.log(data);
+  console.log(JSON.stringify(data));
+
+  const Query3 = await Marca.create({
+    Marca: data.Marca,
+  });
+
+  return Query3;
+};
+
+export const crearModeloSocket = async (data: any) => {
+  console.log(data);
+  console.log(JSON.stringify(data));
+
+  const Query3 = await Modelo.create({
+    Modelo: data.Modelo,
+  });
+
+  return Query3;
+};
 
 export const listarEquipoSocket = async () => {
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
@@ -142,7 +175,7 @@ export const listarMarcaxTipoEquipo = async () => {
     ],
     where: {
       Estado: "A",
-      Cliente_id:"1"
+      Cliente_id: "1",
     },
   });
   console.log("tiago", Query3);
@@ -167,11 +200,9 @@ export const listarModeloxMarca = async () => {
         attributes: [],
         required: true,
       },
-      
     ],
     where: {
       Estado: "A",
-      
     },
   });
   console.log("tiago", Query3);

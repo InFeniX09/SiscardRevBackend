@@ -13,6 +13,9 @@ import {
   listarTipoSolicitudSocket,
 } from "../controllers/Ayuda/centro-atencion";
 import {
+  crearMarcaSocket,
+  crearModeloSocket,
+  crearTipoEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
   listarMarcaxTipoEquipo,
@@ -93,6 +96,22 @@ class Sockets {
 
       socket.on("listar-equipo", async (data, callback) => {
         const json = await listarEquipoSocket();
+        console.log("json", json);
+        callback(json);
+      });
+
+      socket.on("crear-tipoequipo", async (data, callback) => {
+        const json = await crearTipoEquipoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("crear-marca", async (data, callback) => {
+        const json = await crearMarcaSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("crear-modelo", async (data, callback) => {
+        const json = await crearModeloSocket(data);
         console.log("json", json);
         callback(json);
       });
