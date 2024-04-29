@@ -22,7 +22,28 @@ export const listarTipoEquipoSocket = async () => {
 
   return Query3;
 };
+export const listarMarcaSocket = async () => {
+  const Query3 = await Marca.findAll({
+    raw: true,
+    attributes: ["IdMarca", "Marca", "Estado"],
+    where: {
+      Estado: "A",
+    },
+  });
 
+  return Query3;
+};
+export const listarModeloSocket = async () => {
+  const Query3 = await Modelo.findAll({
+    raw: true,
+    attributes: ["IdModelo", "Modelo", "Estado"],
+    where: {
+      Estado: "A",
+    },
+  });
+
+  return Query3;
+};
 export const crearTipoEquipoSocket = async (data: any) => {
   console.log(data);
   console.log(JSON.stringify(data));
@@ -34,7 +55,6 @@ export const crearTipoEquipoSocket = async (data: any) => {
 
   return Query3;
 };
-
 export const crearMarcaSocket = async (data: any) => {
   console.log(data);
   console.log(JSON.stringify(data));
@@ -45,7 +65,6 @@ export const crearMarcaSocket = async (data: any) => {
 
   return Query3;
 };
-
 export const crearModeloSocket = async (data: any) => {
   console.log(data);
   console.log(JSON.stringify(data));
@@ -55,6 +74,43 @@ export const crearModeloSocket = async (data: any) => {
   });
 
   return Query3;
+};
+export const crearEquipoSocket = async (data: any) => {
+  console.log(data);
+  console.log(JSON.stringify(data));
+
+  const Query3 = await Equipo.create({
+    Cliente_id: data.Cliente,
+    Marca_id: data.Marca,
+    Modelo_id: data.Modelo,
+    TipoEquipo_id: data.TipoEquipo,
+    Especificacion: data.Especificacion,
+    Gamma: data.Gamma,
+  });
+
+  return Query3;
+};
+export const crearEquipoDescuentoSocket = async (data: any) => {
+  try {
+    // Extraer el array de preciosPorMes del objeto data
+    const preciosPorMes = data.preciosPorMes;
+
+    // Mapear cada objeto dentro del array preciosPorMes y transformarlo según tus necesidades
+    const equiposSerieJSON = preciosPorMes.map((item: any) => {
+      return {
+        Equipo_id: item.Equipo,
+        Tiempo: item.Tiempo,
+        Precio: item.Precio,
+      };
+    });
+
+    // Insertar los datos masivamente usando Sequelize
+    await EquipoDescuento.bulkCreate(equiposSerieJSON);
+
+    console.log("Carga masiva completada con éxito");
+  } catch (error) {
+    console.error("Error en la carga masiva:", error);
+  }
 };
 
 export const listarEquipoSocket = async () => {

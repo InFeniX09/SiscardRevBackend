@@ -13,12 +13,16 @@ import {
   listarTipoSolicitudSocket,
 } from "../controllers/Ayuda/centro-atencion";
 import {
+  crearEquipoDescuentoSocket,
+  crearEquipoSocket,
   crearMarcaSocket,
   crearModeloSocket,
   crearTipoEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
+  listarMarcaSocket,
   listarMarcaxTipoEquipo,
+  listarModeloSocket,
   listarTipoEquipoSocket,
 } from "../controllers/Logistica/gestion-equipo";
 import {
@@ -93,7 +97,16 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-
+      socket.on("listar-marca", async (data, callback) => {
+        const json = await listarMarcaSocket();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-modelo", async (data, callback) => {
+        const json = await listarModeloSocket();
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("listar-equipo", async (data, callback) => {
         const json = await listarEquipoSocket();
         console.log("json", json);
@@ -112,6 +125,16 @@ class Sockets {
       });
       socket.on("crear-modelo", async (data, callback) => {
         const json = await crearModeloSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("crear-equipo", async (data, callback) => {
+        const json = await crearEquipoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("crear-equipodescuento", async (data, callback) => {
+        const json = await crearEquipoDescuentoSocket(data);
         console.log("json", json);
         callback(json);
       });
@@ -146,7 +169,6 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-
 
       socket.on("listar-MarcaxTipoEquipo", async (data, callback) => {
         const json = await listarMarcaxTipoEquipo();

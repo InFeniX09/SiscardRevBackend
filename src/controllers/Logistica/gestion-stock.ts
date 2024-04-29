@@ -188,14 +188,12 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
     const estadosUnicos: any[] = [
       ...new Set(data.map((item: any) => item.Estado)),
     ];
-
     // Obtiene los IDs de Marca y Modelo
     const [marcas, modelos, estados] = await Promise.all([
       obtenerIdsMarca(marcasUnicas),
       obtenerIdsModelo(modelosUnicos),
       obtenerEstados(estadosUnicos),
     ]);
-
     // Crea un mapa para facilitar la búsqueda
     const marcaMap = new Map(
       marcas.map((marca: any) => [marca.Marca, marca.IdMarca])
@@ -209,7 +207,6 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
 
     // Obtiene los IDs de los equipos
     const equipos = await obtenerIdsEquipo();
-    console.log("RAP1", equipos);
 
     // Crea un mapa para facilitar la búsqueda
     const equipoMap = new Map(
@@ -219,7 +216,6 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
       ])
     );
 
-    console.log("RAP", equipoMap);
     // Recorre los datos y crea el nuevo JSON
     const equiposSerieJSON = data.map((item: any) => {
       const today =
@@ -229,7 +225,6 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
       const estados = estadoMap.get(item.Estado);
 
       const equipoId = equipoMap.get(`${marcaId}-${modeloId}`);
-      console.log("RAPa", equipoId);
       return {
         Serie: item.Imei,
         FcIngreso: today,
