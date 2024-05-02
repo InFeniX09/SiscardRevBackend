@@ -93,10 +93,10 @@ export const crearEquipoSocket = async (data: any) => {
 export const crearEquipoDescuentoSocket = async (data: any) => {
   try {
     // Extraer el array de preciosPorMes del objeto data
-    const preciosPorMes = data.preciosPorMes;
+    const test = data.test;
 
     // Mapear cada objeto dentro del array preciosPorMes y transformarlo según tus necesidades
-    const equiposSerieJSON = preciosPorMes.map((item: any) => {
+    const equiposSerieJSON = test.map((item: any) => {
       return {
         Equipo_id: item.Equipo,
         Tiempo: item.Tiempo,
@@ -153,6 +153,49 @@ export const listarEquipoSocket = async () => {
 
   return Query3;
 };
+export const listarEquipoxClxTCSocket = async (data:any) => {
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+
+  const Query3 = await Equipo.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipo",
+      "Marca.Marca",
+      "Modelo.Modelo",
+      "Cliente.CodCliente",
+      "Especificacion",
+      "Gamma",
+      "Estado",
+    ],
+    include: [
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Cliente,
+        attributes: [],
+        required: true,
+      },
+    ],
+    where: {
+      Estado: "A",
+      Cliente_id:data.Cliente,
+      TipoEquipo_id:data.TipoEquipo,
+    },
+  });
+
+  return Query3;
+};
+
 export const listarEquipoDescuentoSocket = async () => {
   EquipoDescuento.belongsTo(Equipo, { foreignKey: "Equipo_id" });
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });

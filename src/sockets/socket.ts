@@ -20,6 +20,7 @@ import {
   crearTipoEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
+  listarEquipoxClxTCSocket,
   listarMarcaSocket,
   listarMarcaxTipoEquipo,
   listarModeloSocket,
@@ -172,6 +173,12 @@ class Sockets {
 
       socket.on("listar-MarcaxTipoEquipo", async (data, callback) => {
         const json = await listarMarcaxTipoEquipo();
+        console.log("json", json);
+        callback(json);
+      });
+
+      socket.on("listar-equipoxclxtc", async (data, callback) => {
+        const json = await listarEquipoxClxTCSocket(data);
         console.log("json", json);
         callback(json);
       });
