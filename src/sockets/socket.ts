@@ -15,9 +15,11 @@ import {
 import {
   crearEquipoDescuentoSocket,
   crearEquipoSocket,
+  crearEquipoStockSocket,
   crearMarcaSocket,
   crearModeloSocket,
   crearTipoEquipoSocket,
+  listarClasificacionEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
   listarEquipoxClxTCSocket,
@@ -25,6 +27,7 @@ import {
   listarMarcaxTipoEquipo,
   listarModeloSocket,
   listarTipoEquipoSocket,
+  listarTipoEquipoxClSocket,
 } from "../controllers/Logistica/gestion-equipo";
 import {
   cargaMasivaEquipoSocket,
@@ -92,9 +95,18 @@ class Sockets {
       });
       /**/
       /*Gestion-Equipo*/
-
+      socket.on("listar-clasificacionequipo", async (data, callback) => {
+        const json = await listarClasificacionEquipoSocket();
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("listar-tipoequipo", async (data, callback) => {
         const json = await listarTipoEquipoSocket();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-tipoequipoxcl", async (data, callback) => {
+        const json = await listarTipoEquipoxClSocket(data);
         console.log("json", json);
         callback(json);
       });
@@ -136,6 +148,11 @@ class Sockets {
       });
       socket.on("crear-equipodescuento", async (data, callback) => {
         const json = await crearEquipoDescuentoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("ingresar-stock", async (data, callback) => {
+        const json = await crearEquipoStockSocket(data);
         console.log("json", json);
         callback(json);
       });

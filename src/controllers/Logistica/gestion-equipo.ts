@@ -10,13 +10,41 @@ import Modelo from "../../models/modelo";
 import Equipo from "../../models/equipo";
 import Cliente from "../../models/cliente";
 import EquipoDescuento from "../../models/equipodescuento";
+import EquipoStock from "../../models/equipostock";
+import EquipoSerie from "../../models/equiposerie";
+import EquipoControl from "../../models/equipocontrol";
 
+export const listarClasificacionEquipoSocket = async () => {
+  const Query3 = await TipoEquipo.findAll({
+    raw: true,
+    attributes: [
+      [Sequelize.literal("DISTINCT TipoEquipo.Clasificacion"), "Clasificacion"],
+    ],
+    where: {
+      Estado: "A",
+    },
+  });
+
+  return Query3;
+};
 export const listarTipoEquipoSocket = async () => {
   const Query3 = await TipoEquipo.findAll({
     raw: true,
     attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
     where: {
       Estado: "A",
+    },
+  });
+
+  return Query3;
+};
+export const listarTipoEquipoxClSocket = async (data: any) => {
+  const Query3 = await TipoEquipo.findAll({
+    raw: true,
+    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
+    where: {
+      Estado: "A",
+      Clasificacion: data.Clasificacion,
     },
   });
 
@@ -112,6 +140,80 @@ export const crearEquipoDescuentoSocket = async (data: any) => {
     console.error("Error en la carga masiva:", error);
   }
 };
+export const crearEquipoStockSocket = async (data: any) => {
+  try {
+    // Extraer el array de preciosPorMes del objeto data
+    const test = data.test;
+
+    if (data.Clasificacion === "Equipo") {
+      // Mapear cada objeto dentro del array preciosPorMes y transformarlo según tus necesidades
+      const equiposSerieJSON = test.map((item: any) => {
+        return {
+          Equipo_id: item.Equipo,
+          Serie: item.Serie,
+          Usuario_id: 5,
+          TiempoVida: 0,
+        };
+      });
+
+      const insercionmasiva = await EquipoSerie.bulkCreate(equiposSerieJSON);
+
+      const stockActual: any = await EquipoStock.findOne({
+        where: { Equipo_id: data.test[0].Equipo,Usuario_id:5 },
+      });
+
+      // Actualizar el stock sumándole la longitud de equiposSerieJSON
+      await EquipoStock.update(
+        {
+          StockDisponible:
+            stockActual.StockDisponible + equiposSerieJSON.length,
+        },
+        {
+          where: { Equipo_id: data.test[0].Equipo },
+        }
+      );
+
+      const equiposSerieJSON1 = insercionmasiva.map((item: any) => {
+        return {
+          EquipoSerie_id: item.IdEquipoSerie,
+          Usuario_id: 5,
+          Observacion: "Ingreso de Stock por Software",
+        };
+      });
+
+      await EquipoControl.bulkCreate(equiposSerieJSON1);
+
+      console.log("Carga masiva completada con éxito");
+    } else if (data.Clasificacion === "Accesorio") {
+      const stockActual: any = await EquipoStock.findOne({
+        where: { Equipo_id: data.test[0].Equipo,Usuario_id:5 },
+      });
+
+      await EquipoStock.create(
+        {
+          StockDisponible:
+            stockActual.StockDisponible + data.test.length,
+        },
+        {
+          where: { Equipo_id: data.test[0].Equipo },
+        }
+      );
+
+      // Actualizar el stock sumándole la longitud de equiposSerieJSON
+      await EquipoStock.update(
+        {
+          StockDisponible:
+            stockActual.StockDisponible + data.test.length,
+        },
+        {
+          where: { Equipo_id: data.test[0].Equipo },
+        }
+      );
+    }
+  } catch (error) {
+    console.error("Error en la carga masiva:", error);
+  }
+};
 
 export const listarEquipoSocket = async () => {
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
@@ -153,7 +255,7 @@ export const listarEquipoSocket = async () => {
 
   return Query3;
 };
-export const listarEquipoxClxTCSocket = async (data:any) => {
+export const listarEquipoxClxTCSocket = async (data: any) => {
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
@@ -188,8 +290,8 @@ export const listarEquipoxClxTCSocket = async (data:any) => {
     ],
     where: {
       Estado: "A",
-      Cliente_id:data.Cliente,
-      TipoEquipo_id:data.TipoEquipo,
+      Cliente_id: data.Cliente,
+      TipoEquipo_id: data.TipoEquipo,
     },
   });
 

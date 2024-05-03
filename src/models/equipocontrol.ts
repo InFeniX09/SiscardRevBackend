@@ -9,35 +9,14 @@ const EquipoControl = db[0].define(
       primaryKey: true,
       autoIncrement: true,
     },
-    Equipo_id: {
+    EquipoSerie_id: {
       type: DataTypes.INTEGER,
-    },
-    Serie: {
-      type: DataTypes.STRING,
-    },
-    Identificacion: {
-      type: DataTypes.STRING,
-    },
-    TiempoVida: {
-      type: DataTypes.NUMBER,
-    },
-    FcAsignado: {
-      type: DataTypes.DATE,
     },
     Usuario_id: {
       type: DataTypes.INTEGER,
     },
-    FcIngreso: {
+    FcMovimiento: {
       type: DataTypes.DATE,
-    },
-    FcBaja: {
-      type: DataTypes.DATE,
-    },
-    Proveedor_id: {
-      type: DataTypes.INTEGER,
-    },
-    Gaveta_id: {
-      type: DataTypes.INTEGER,
     },
     Observacion: {
       type: DataTypes.STRING,
