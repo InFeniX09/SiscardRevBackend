@@ -1,4 +1,5 @@
 import { Request, Response, request, response } from "express";
+import { PassThrough } from "stream";
 
 import Mensaje from "../../models/mensaje";
 import Usuario from "../../models/usuario";
@@ -15,7 +16,8 @@ import Cliente from "../../models/cliente";
 import EquipoStock from "../../models/equipostock";
 import EquipoSerie from "../../models/equiposerie";
 import TipoEquipo from "../../models/tipoequipo";
-
+import PDFDocument from "pdfkit";
+import fs from "fs";
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
@@ -144,7 +146,7 @@ export const crearTicketSocket = async (data: any) => {
   return Query3;
 };
 
-export const listarEquipoxClxTexUsuSocket = async (data:any) => {
+export const listarEquipoxClxTexUsuSocket = async (data: any) => {
   Equipo.hasMany(EquipoStock, { foreignKey: "Equipo_id" });
   Equipo.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
   Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
@@ -161,7 +163,6 @@ export const listarEquipoxClxTexUsuSocket = async (data:any) => {
       "Modelo.Modelo",
       "EquipoSeries.Serie",
       "EquipoSeries.IdEquipoSerie",
-
     ],
     include: [
       {
@@ -206,4 +207,102 @@ export const listarEquipoxClxTexUsuSocket = async (data:any) => {
   });
 
   return Query3;
+};
+
+export const listarAccesorioxClxTexUsuSocket = async () => {
+  Equipo.hasMany(EquipoStock, { foreignKey: "Equipo_id" });
+  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+
+  const Query3 = await Equipo.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipo",
+      "Cliente.CodCliente",
+      "Marca.Marca",
+      "Modelo.Modelo",
+    ],
+    include: [
+      {
+        model: EquipoStock,
+        required: true,
+        attributes: [],
+        where: {
+          Usuario_id: 5,
+        },
+      },
+      {
+        model: TipoEquipo,
+        required: true,
+        attributes: [],
+        where: {
+          Clasificacion: "Accesorio",
+        },
+      },
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Cliente,
+        attributes: [],
+        required: true,
+      },
+    ],
+    where: {},
+  });
+
+  return Query3;
+};
+
+export const armarPdfSolicitudSocket = (data:any) => {
+  return new Promise<Uint8Array>((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({
+        size: "A4",
+      });
+
+      const chunks: Uint8Array[] = []; // Array para almacenar los chunks de datos del PDF
+
+      doc.on("data", (chunk: Uint8Array) => {
+        chunks.push(chunk); // Almacenar cada chunk de datos del PDF
+      });
+
+      doc.on("end", () => {
+        const pdfBytes = Buffer.concat(chunks); // Concatenar los chunks en un buffer
+        resolve(new Uint8Array(pdfBytes)); // Convertir el buffer en Uint8Array y resolver la promesa
+      });
+
+      // Insertar la imagen
+      const imgPath = "src/db/Fondopdf.png";
+      doc.image(imgPath, {
+        fit: [250, 300],
+        align: "center",
+        valign: "center",
+      });
+
+      // Agregar contenido adicional al PDF
+      doc
+        .save()
+        .moveTo(100, 150)
+        .lineTo(100, 250)
+        .lineTo(200, 250)
+        .fill("#FF3300");
+
+      // Finalizar el documento PDF
+      doc.end();
+      console.log("PDF generado con éxito");
+    } catch (error) {
+      console.error("Error durante la generación del PDF:", error);
+      reject(error); // Rechazar la promesa en caso de error
+    }
+  });
 };

@@ -5,8 +5,10 @@ import {
   listarchatSocket,
 } from "../controllers/Extra/chat";
 import {
+  armarPdfSolicitudSocket,
   crearSolicitudSocket,
   crearTicketSocket,
+  listarAccesorioxClxTexUsuSocket,
   listarEquipoxClxTexUsuSocket,
   listarSolicitud,
   listarTicketSocket,
@@ -53,6 +55,15 @@ class Sockets {
       console.log(`${socket.id} connected.`);
 
       /*centro-atencion PAGE*/
+      socket.on("armarpdf-solicitud", async (data, callback) => {
+        const json = await armarPdfSolicitudSocket(data);
+        callback(json);
+      });
+      socket.on("listar-accesorioxclxtexusu", async (data, callback) => {
+        const json = await listarAccesorioxClxTexUsuSocket();
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("listar-equipoxclxtexusu", async (data, callback) => {
         const json = await listarEquipoxClxTexUsuSocket(data);
         console.log("json", json);
