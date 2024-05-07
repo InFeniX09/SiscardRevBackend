@@ -7,6 +7,7 @@ import {
 import {
   crearSolicitudSocket,
   crearTicketSocket,
+  listarEquipoxClxTexUsuSocket,
   listarSolicitud,
   listarTicketSocket,
   listarTipoMotivoSocket,
@@ -52,6 +53,11 @@ class Sockets {
       console.log(`${socket.id} connected.`);
 
       /*centro-atencion PAGE*/
+      socket.on("listar-equipoxclxtexusu", async (data, callback) => {
+        const json = await listarEquipoxClxTexUsuSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("listar-tiposolicitud", async (data, callback) => {
         const json = await listarTipoSolicitudSocket();
         console.log("json", json);

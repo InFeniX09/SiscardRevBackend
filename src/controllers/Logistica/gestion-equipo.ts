@@ -142,11 +142,9 @@ export const crearEquipoDescuentoSocket = async (data: any) => {
 };
 export const crearEquipoStockSocket = async (data: any) => {
   try {
-    // Extraer el array de preciosPorMes del objeto data
-    const test = data.test;
-
-    if (data.Clasificacion === "Equipo") {
-      // Mapear cada objeto dentro del array preciosPorMes y transformarlo según tus necesidades
+    if (data.Clasificacion === "Seriado") {
+      const test = data.test;
+      console.log("yara1");
       const equiposSerieJSON = test.map((item: any) => {
         return {
           Equipo_id: item.Equipo,
@@ -158,21 +156,6 @@ export const crearEquipoStockSocket = async (data: any) => {
 
       const insercionmasiva = await EquipoSerie.bulkCreate(equiposSerieJSON);
 
-      const stockActual: any = await EquipoStock.findOne({
-        where: { Equipo_id: data.test[0].Equipo,Usuario_id:5 },
-      });
-
-      // Actualizar el stock sumándole la longitud de equiposSerieJSON
-      await EquipoStock.update(
-        {
-          StockDisponible:
-            stockActual.StockDisponible + equiposSerieJSON.length,
-        },
-        {
-          where: { Equipo_id: data.test[0].Equipo },
-        }
-      );
-
       const equiposSerieJSON1 = insercionmasiva.map((item: any) => {
         return {
           EquipoSerie_id: item.IdEquipoSerie,
@@ -180,35 +163,52 @@ export const crearEquipoStockSocket = async (data: any) => {
           Observacion: "Ingreso de Stock por Software",
         };
       });
-
       await EquipoControl.bulkCreate(equiposSerieJSON1);
 
-      console.log("Carga masiva completada con éxito");
-    } else if (data.Clasificacion === "Accesorio") {
       const stockActual: any = await EquipoStock.findOne({
-        where: { Equipo_id: data.test[0].Equipo,Usuario_id:5 },
+        where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
       });
 
-      await EquipoStock.create(
-        {
-          StockDisponible:
-            stockActual.StockDisponible + data.test.length,
-        },
-        {
-          where: { Equipo_id: data.test[0].Equipo },
-        }
-      );
+      if (!stockActual) {
+        await EquipoStock.create({
+          StockDisponible: equiposSerieJSON.length,
+          StockNoDisponible: 0,
+          Equipo_id: data.test[0].Equipo,
+          Usuario_id: 5,
+        });
+      } else {
+        await EquipoStock.update(
+          {
+            StockDisponible:
+              stockActual.StockDisponible + equiposSerieJSON.length,
+          },
+          {
+            where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
+          }
+        );
+      }
+    } else if (data.Clasificacion[0] === "Accesorio") {
+      const stockActual: any = await EquipoStock.findOne({
+        where: { Equipo_id: data.IdEquipo, Usuario_id: 5 },
+      });
 
-      // Actualizar el stock sumándole la longitud de equiposSerieJSON
-      await EquipoStock.update(
-        {
-          StockDisponible:
-            stockActual.StockDisponible + data.test.length,
-        },
-        {
-          where: { Equipo_id: data.test[0].Equipo },
-        }
-      );
+      if (!stockActual) {
+        await EquipoStock.create({
+          StockDisponible: data.Cantidad,
+          StockNoDisponible: 0,
+          Equipo_id: data.IdEquipo,
+          Usuario_id: 5,
+        });
+      } else {
+        await EquipoStock.update(
+          {
+            StockDisponible: stockActual.StockDisponible + parseFloat(data.Cantidad),
+          },
+          {
+            where: { Equipo_id: data.IdEquipo, Usuario_id: 5 },
+          }
+        );
+      }
     }
   } catch (error) {
     console.error("Error en la carga masiva:", error);

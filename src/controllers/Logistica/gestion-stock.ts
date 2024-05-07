@@ -66,8 +66,9 @@ export const listarEquipoStockSocket = async () => {
 };
 
 export const listarEquipoControlSocket = async () => {
-  EquipoControl.belongsTo(Equipo, { foreignKey: "Equipo_id" });
+  EquipoControl.belongsTo(EquipoSerie, { foreignKey: "EquipoSerie_id" });
   EquipoControl.belongsTo(Usuario, { foreignKey: "Usuario_id" });
+  EquipoSerie.belongsTo(Equipo, { foreignKey: "Equipo_id" });
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
@@ -76,15 +77,11 @@ export const listarEquipoControlSocket = async () => {
     raw: true,
     attributes: [
       "IdEquipoControl",
-      "Equipo.Cliente.CodCliente",
-      "Equipo.Marca.Marca",
-      "Equipo.Modelo.Modelo",
+      "EquipoSerie.Equipo.Cliente.CodCliente",
+      "EquipoSerie.Equipo.Marca.Marca",
+      "EquipoSerie.Equipo.Modelo.Modelo",
       "Usuario.Usuario",
-      "Serie",
-      "Identificacion",
-      "TiempoVida",
-      "FcAsignado",
-      "FcBaja",
+      "FcMovimiento",
       "Observacion",
       "Estado",
     ],
@@ -95,24 +92,31 @@ export const listarEquipoControlSocket = async () => {
         required: true,
       },
       {
-        model: Equipo,
+        model: EquipoSerie,
         attributes: [],
         required: true,
         include: [
           {
-            model: Marca,
+            model: Equipo,
             attributes: [],
             required: true,
-          },
-          {
-            model: Modelo,
-            attributes: [],
-            required: true,
-          },
-          {
-            model: Cliente,
-            attributes: [],
-            required: true,
+            include: [
+              {
+                model: Marca,
+                attributes: [],
+                required: true,
+              },
+              {
+                model: Modelo,
+                attributes: [],
+                required: true,
+              },
+              {
+                model: Cliente,
+                attributes: [],
+                required: true,
+              },
+            ],
           },
         ],
       },
@@ -304,7 +308,6 @@ const obtenerEstados = async (estados: string[]) => {
 };
 
 export const listarEquipoxClasificacionSocket = async () => {
-  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
@@ -322,14 +325,6 @@ export const listarEquipoxClasificacionSocket = async () => {
         model: Marca,
         attributes: [],
         required: true,
-        include: [
-          {
-            model: TipoEquipo,
-            attributes: [],
-            required: true,
-            where: { Clasificacion: "Accesorio" },
-          },
-        ],
       },
       {
         model: Modelo,
@@ -342,7 +337,6 @@ export const listarEquipoxClasificacionSocket = async () => {
         required: true,
       },
     ],
-  
   });
 
   return Query3;
