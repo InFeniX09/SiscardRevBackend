@@ -263,7 +263,7 @@ export const listarAccesorioxClxTexUsuSocket = async () => {
   return Query3;
 };
 
-export const armarPdfSolicitudSocket = (data:any) => {
+export const armarPdfSolicitudSocket = (data: any) => {
   return new Promise<Uint8Array>((resolve, reject) => {
     try {
       const doc = new PDFDocument({

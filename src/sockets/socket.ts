@@ -22,6 +22,7 @@ import {
   crearMarcaSocket,
   crearModeloSocket,
   crearTipoEquipoSocket,
+  enviarCorreoSocket,
   listarClasificacionEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
@@ -111,6 +112,11 @@ class Sockets {
         }
       });
       /**/
+      socket.on("enviarcorreo", async (data, callback) => {
+        const json = await enviarCorreoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
       /*Gestion-Equipo*/
       socket.on("listar-clasificacionequipo", async (data, callback) => {
         const json = await listarClasificacionEquipoSocket();

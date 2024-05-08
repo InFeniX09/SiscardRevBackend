@@ -13,6 +13,36 @@ import EquipoDescuento from "../../models/equipodescuento";
 import EquipoStock from "../../models/equipostock";
 import EquipoSerie from "../../models/equiposerie";
 import EquipoControl from "../../models/equipocontrol";
+const nodemailer = require("nodemailer");
+
+export const enviarCorreoSocket = async (data:any) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use `true` for port 465, `false` for all other ports
+    auth: {
+      user: "infenix.reborn@gmail.com",
+      pass: "fzf zrz mhg hyq otrl",
+    },
+  });
+  const info = await transporter.sendMail({
+    from: '"SiscardRevolution🎊" <SiscardRevolution@siscardperu.pe>', // sender address
+    to: "infenix.reborn@gmail.com", // list of receivers
+    cc:"sistemas.sp@siscardperu.pe",
+    subject: "Pruebas Testing SR ✔", // Subject line
+    text: "Hello world?", // plain text body
+    html: "<b>Ya estamos llegandoooooo</b>", // html body
+    attachments: [
+      {
+        filename: 'archivo1.pdf', // Nombre del primer archivo adjunto
+        content: data.pdf, // Contenido del primer archivo PDF
+        encoding: 'base64' // Codificación del contenido
+      },
+    ]
+  });
+
+  console.log("Message sent: %s", info.messageId);
+};
 
 export const listarClasificacionEquipoSocket = async () => {
   const Query3 = await TipoEquipo.findAll({
@@ -202,7 +232,8 @@ export const crearEquipoStockSocket = async (data: any) => {
       } else {
         await EquipoStock.update(
           {
-            StockDisponible: stockActual.StockDisponible + parseFloat(data.Cantidad),
+            StockDisponible:
+              stockActual.StockDisponible + parseFloat(data.Cantidad),
           },
           {
             where: { Equipo_id: data.IdEquipo, Usuario_id: 5 },
