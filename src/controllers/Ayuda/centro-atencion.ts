@@ -263,7 +263,92 @@ export const listarAccesorioxClxTexUsuSocket = async () => {
   return Query3;
 };
 
-export const armarPdfSolicitudSocket = (data: any) => {
+export const armarPdfSolicitudSocket = async (data: any) => {
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+  const ids = data.Accesorio.split(",").map(Number);
+  const Query3 = await Equipo.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipo",
+      "Cliente.CodCliente",
+      "Marca.Marca",
+      "Modelo.Modelo",
+    ],
+    include: [
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Cliente,
+        attributes: [],
+        required: true,
+      },
+    ],
+    where: {
+      IdEquipo: {
+        [Op.in]: ids,
+      },
+    },
+  });
+
+  const equipoIds = Object.values(data)
+    .filter(
+      (value, index) =>
+        value !== "" && index !== Object.keys(data).indexOf("Accesorio")
+    )
+    .map(Number);
+
+  Equipo.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+
+  const Query0 = await Equipo.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipo",
+      "Cliente.CodCliente",
+      "Marca.Marca",
+      "Modelo.Modelo",
+      "EquipoSeries.Serie",
+    ],
+    include: [
+      {
+        model: EquipoSerie,
+        attributes: [],
+        required: true,
+        where: {
+          IdEquipoSerie: { [Op.in]: (equipoIds.join(",")).split(",").map(Number) },
+        },
+      },
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Cliente,
+        attributes: [],
+        required: true,
+      },
+    ],
+  });
+  console.log("pequeña", Query0);
+
   return new Promise<Uint8Array>((resolve, reject) => {
     try {
       const doc = new PDFDocument({
@@ -289,15 +374,26 @@ export const armarPdfSolicitudSocket = (data: any) => {
         valign: "center",
       });
 
-      // Agregar contenido adicional al PDF
-      doc
-        .save()
-        .moveTo(100, 150)
-        .lineTo(100, 250)
-        .lineTo(200, 250)
-        .fill("#FF3300");
 
-      // Finalizar el documento PDF
+      doc.fontSize(12).text(data.Celular, 75, 177);
+      doc.fontSize(12).text(data.Accesorio, 75, 200);
+
+      // Empezamos con la Lógica
+      let yPos = 220; // Posición inicial
+      const lineSpacing = 10; // Espaciado entre líneas
+
+      // Iterar sobre los elementos de Query3 y mostrarlos en el PDF
+      Query3.forEach((item: any) => {
+        doc.fontSize(12).text(`IdEquipo: ${item.IdEquipo}`, 75, yPos);
+        yPos += lineSpacing;
+        doc.fontSize(12).text(`CodCliente: ${item.CodCliente}`, 100, yPos);
+        yPos += lineSpacing;
+        doc.fontSize(12).text(`Marca: ${item.Marca}`, 125, yPos);
+        yPos += lineSpacing;
+        doc.fontSize(12).text(`Modelo: ${item.Modelo}`, 150, yPos);
+        yPos += lineSpacing * 2; // Espaciado adicional entre elementos
+      });
+
       doc.end();
       console.log("PDF generado con éxito");
     } catch (error) {
