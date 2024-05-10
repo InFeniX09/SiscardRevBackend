@@ -1,6 +1,4 @@
-import TipoMotivo from "../../models/tipomotivo";
 import Marca from "../../models/marca";
-import TipoEquipo from "../../models/tipoequipo";
 import EquipoStock from "../../models/equipostock";
 import Usuario from "../../models/usuario";
 import Equipo from "../../models/equipo";
@@ -10,6 +8,7 @@ import EquipoControl from "../../models/equipocontrol";
 import EquipoSerie from "../../models/equiposerie";
 import moment from "moment-timezone";
 import Estado from "../../models/estado";
+import Area from "../../models/area";
 
 export const listarEquipoStockSocket = async () => {
   EquipoStock.belongsTo(Usuario, { foreignKey: "Usuario_id" });
@@ -182,65 +181,105 @@ export const listarEquipoSerieSocket = async () => {
 
 export const cargaMasivaEquipoSocket = async (data: any) => {
   try {
-    // Recopila todos los nombres de marca y modelo únicos
+    // Recopila todos los nombres de marca,modelo,estado
+    const clientesUnicos: any[] = [
+      ...new Set(data.map((item: any) => item.CodCliente)),
+    ];
     const marcasUnicas: any[] = [
       ...new Set(data.map((item: any) => item.Marca)),
     ];
     const modelosUnicos: any[] = [
       ...new Set(data.map((item: any) => item.Modelo)),
     ];
+    const areasUnicas: any[] = [...new Set(data.map((item: any) => item.Area))];
     const estadosUnicos: any[] = [
       ...new Set(data.map((item: any) => item.Estado)),
     ];
     // Obtiene los IDs de Marca y Modelo
-    const [marcas, modelos, estados] = await Promise.all([
+    const [clientes, marcas, modelos, areas, estados] = await Promise.all([
+      obtenerIdsCliente(clientesUnicos),
       obtenerIdsMarca(marcasUnicas),
       obtenerIdsModelo(modelosUnicos),
+      obtenerIdsArea(areasUnicas),
       obtenerEstados(estadosUnicos),
     ]);
     // Crea un mapa para facilitar la búsqueda
+    const clienteMap = new Map(
+      clientes.map((cliente: any) => [cliente.CodCliente, cliente.IdCliente])
+    );
     const marcaMap = new Map(
       marcas.map((marca: any) => [marca.Marca, marca.IdMarca])
     );
     const modeloMap = new Map(
       modelos.map((modelo: any) => [modelo.Modelo, modelo.IdModelo])
     );
+    const areaMap = new Map(areas.map((area: any) => [area.Area, area.IdArea]));
     const estadoMap = new Map(
       estados.map((estado: any) => [estado.Estado, estado.IdEstado])
     );
-
     // Obtiene los IDs de los equipos
     const equipos = await obtenerIdsEquipo();
-
     // Crea un mapa para facilitar la búsqueda
     const equipoMap = new Map(
       equipos.map((equipo: any) => [
-        `${equipo.Marca_id}-${equipo.Modelo_id}`,
+        `${equipo.Cliente_id}-${equipo.Marca_id}-${equipo.Modelo_id}-${equipo.Area_id}`,
         equipo.IdEquipo,
       ])
     );
-
     // Recorre los datos y crea el nuevo JSON
     const equiposSerieJSON = data.map((item: any) => {
-      const today =
-        moment(item.FcIngreso).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+      const today = moment(item.FcIngreso).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+      const clienteId = clienteMap.get(item.CodCliente);
       const marcaId = marcaMap.get(item.Marca);
       const modeloId = modeloMap.get(item.Modelo);
+      const areaId = areaMap.get(item.Area);
       const estados = estadoMap.get(item.Estado);
-
-      const equipoId = equipoMap.get(`${marcaId}-${modeloId}`);
+      const equipoId = equipoMap.get(
+        `${clienteId}-${marcaId}-${modeloId}-${areaId}`
+      );
       return {
-        Serie: item.Imei,
+        Equipo_id: equipoId,
+        Serie: item.Serie,
+        Identificador: item.Identificador,
+        Usuario_id: 5,
         FcIngreso: today,
         Estado: estados,
-        Equipo_id: equipoId,
       };
     });
 
+    const insercionmasiva = await EquipoSerie.bulkCreate(equiposSerieJSON);
     // Inserta los datos masivamente usando Sequelize
-    await EquipoSerie.bulkCreate(equiposSerieJSON);
-
-    console.log("Carga masiva completada con éxito");
+    const equiposSerieJSON1 = insercionmasiva.map((item: any) => {
+      return {
+        EquipoSerie_id: item.IdEquipoSerie,
+        Usuario_id: 5,
+        Observacion: "Ingreso de Stock por Software",
+      };
+    });
+    const insercionmasiva1:any = await EquipoControl.bulkCreate(equiposSerieJSON1);
+    //
+    const stockActual: any = await EquipoStock.findOne({
+      where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
+    });
+/*
+    if (!stockActual) {
+      await EquipoStock.create({
+        StockDisponible: equiposSerieJSON.length,
+        StockNoDisponible: 0,
+        Equipo_id: data.test[0].Equipo,
+        Usuario_id: 5,
+      });
+    } else {
+      await EquipoStock.update(
+        {
+          StockDisponible:
+            stockActual.StockDisponible + equiposSerieJSON.length,
+        },
+        {
+          where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
+        }
+      );
+    }*/
   } catch (error) {
     console.error("Error en la carga masiva:", error);
   }
@@ -250,12 +289,20 @@ const obtenerIdsEquipo = async () => {
   try {
     const equipos = await Equipo.findAll({
       raw: true,
-      attributes: ["IdEquipo", "Marca_id", "Modelo_id"],
+      attributes: [
+        "IdEquipo",
+        "Cliente_id",
+        "Marca_id",
+        "Modelo_id",
+        "Area_id",
+      ],
     });
 
     console.log("snow", equipos);
 
     return equipos.map((equipo: any) => ({
+      Cliente_id: equipo.Cliente_id,
+      Area_id: equipo.Area_id,
       Marca_id: equipo.Marca_id,
       Modelo_id: equipo.Modelo_id,
       IdEquipo: equipo.IdEquipo,
@@ -265,7 +312,20 @@ const obtenerIdsEquipo = async () => {
     return [];
   }
 };
-
+const obtenerIdsCliente = async (clientes: string[]) => {
+  try {
+    const marcasEnDB = await Cliente.findAll({
+      where: { CodCliente: clientes },
+    });
+    return marcasEnDB.map((cliente: any) => ({
+      CodCliente: cliente.CodCliente,
+      IdCliente: cliente.IdCliente,
+    }));
+  } catch (error) {
+    console.error("Error al obtener los IDs de las marcas:", error);
+    return [];
+  }
+};
 const obtenerIdsMarca = async (marcas: string[]) => {
   try {
     const marcasEnDB = await Marca.findAll({ where: { Marca: marcas } });
@@ -278,7 +338,6 @@ const obtenerIdsMarca = async (marcas: string[]) => {
     return [];
   }
 };
-
 const obtenerIdsModelo = async (modelos: string[]) => {
   try {
     const modelosEnDB = await Modelo.findAll({ where: { Modelo: modelos } });
@@ -291,15 +350,26 @@ const obtenerIdsModelo = async (modelos: string[]) => {
     return [];
   }
 };
-
 const obtenerEstados = async (estados: string[]) => {
   try {
     const estadosEnDB = await Estado.findAll({
-      where: { Agrupamiento: "Equipo" },
+      where: { Agrupamiento: "Equipo", Estado: estados },
     });
     return estadosEnDB.map((estado: any) => ({
       Estado: estado.Estado,
       IdEstado: estado.IdEstado,
+    }));
+  } catch (error) {
+    console.error("Error al obtener los IDs de los estados:", error);
+    return [];
+  }
+};
+const obtenerIdsArea = async (areas: string[]) => {
+  try {
+    const modelosEnDB = await Area.findAll({ where: { Area: areas } });
+    return modelosEnDB.map((area: any) => ({
+      Area: area.Area,
+      IdArea: area.IdArea,
     }));
   } catch (error) {
     console.error("Error al obtener los IDs de los modelos:", error);
