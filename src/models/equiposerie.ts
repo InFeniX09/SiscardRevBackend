@@ -18,6 +18,9 @@ const EquipoSerie = db[0].define(
     Serie: {
       type: DataTypes.STRING,
     },
+    Identificador: {
+      type: DataTypes.STRING,
+    },
     FcIngreso: {
       type: DataTypes.DATE,
     },

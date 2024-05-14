@@ -260,28 +260,49 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
     const insercionmasiva1: any = await EquipoControl.bulkCreate(
       equiposSerieJSON1
     );
-    const stockActual: any = await EquipoStock.findOne({
-      where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
-    }); 
-    /*
-    if (!stockActual) {
-      await EquipoStock.create({
-        StockDisponible: equiposSerieJSON.length,
-        StockNoDisponible: 0,
-        Equipo_id: data.test[0].Equipo,
-        Usuario_id: 5,
+    console.log("infe", equiposSerieJSON);
+
+    const stockPorEquipoId: { [key: number]: number } = {};
+
+    // Iteramos sobre el array equiposSerieJSON para contar la cantidad de elementos por Equipo_id
+    equiposSerieJSON.forEach((item: { Equipo_id: number }) => {
+      const { Equipo_id } = item;
+      if (stockPorEquipoId[Equipo_id]) {
+        stockPorEquipoId[Equipo_id] += 1; // Puedes sumar la cantidad que desees aquí
+      } else {
+        stockPorEquipoId[Equipo_id] = 1; // Puedes inicializar la cantidad con el valor que desees aquí
+      }
+    });
+    const nuevoArray = Object.entries(stockPorEquipoId).map(
+      ([Equipo_id, cantidad]) => ({ Equipo_id: parseInt(Equipo_id), cantidad })
+    );
+
+    // Ahora nuevoArray contiene la cantidad de stock por Equipo_id
+    console.log("carnal", nuevoArray);
+
+    nuevoArray.forEach(async (element: any) => {
+      const stockActual: any = await EquipoStock.findOne({
+        where: { Equipo_id: element.Equipo_id, Usuario_id: 5 },
       });
-    } else {
-      await EquipoStock.update(
-        {
-          StockDisponible:
-            stockActual.StockDisponible + equiposSerieJSON.length,
-        },
-        {
-          where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
-        }
-      );
-    }*/
+
+      if (!stockActual) {
+        await EquipoStock.create({
+          StockDisponible: element.cantidad,
+          StockNoDisponible: 0,
+          Equipo_id: element.Equipo_id,
+          Usuario_id: 5,
+        });
+      } else {
+        await EquipoStock.update(
+          {
+            StockDisponible: stockActual.StockDisponible + element.cantidad,
+          },
+          {
+            where: { Equipo_id: element.Equipo_id, Usuario_id: 5 },
+          }
+        );
+      }
+    });
   } catch (error) {
     console.error("Error en la carga masiva:", error);
   }

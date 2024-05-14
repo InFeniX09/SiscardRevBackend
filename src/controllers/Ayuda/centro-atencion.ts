@@ -4,7 +4,7 @@ import { PassThrough } from "stream";
 import Mensaje from "../../models/mensaje";
 import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
-import { Op, Sequelize, json } from "sequelize";
+import { DatabaseError, Op, Sequelize, json } from "sequelize";
 import TipoSolicitud from "../../models/tiposolicitud";
 import TipoMotivo from "../../models/tipomotivo";
 import Solicitud from "../../models/solicitud";
@@ -18,6 +18,7 @@ import EquipoSerie from "../../models/equiposerie";
 import TipoEquipo from "../../models/tipoequipo";
 import PDFDocument from "pdfkit";
 import fs from "fs";
+import EquipoDescuento from "../../models/equipodescuento";
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
@@ -264,10 +265,12 @@ export const listarAccesorioxClxTexUsuSocket = async () => {
 };
 
 export const armarPdfSolicitudSocket = async (data: any) => {
+  console.log("mbaka", data);
+  console.log("papitarota");
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
-  const ids = data.Accesorio.split(",").map(Number);
+  const ids = data.dato.Accesorio.split(",").map(Number) || "";
   const Query3 = await Equipo.findAll({
     raw: true,
     attributes: [
@@ -300,10 +303,10 @@ export const armarPdfSolicitudSocket = async (data: any) => {
     },
   });
 
-  const equipoIds = Object.values(data)
+  const equipoIds = Object.values(data.dato)
     .filter(
       (value, index) =>
-        value !== "" && index !== Object.keys(data).indexOf("Accesorio")
+        value !== "" && index !== Object.keys(data.dato).indexOf("Accesorio")
     )
     .map(Number);
 
@@ -311,8 +314,9 @@ export const armarPdfSolicitudSocket = async (data: any) => {
   Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
 
-  const Query0 = await Equipo.findAll({
+  const Query0: any = await Equipo.findAll({
     raw: true,
     attributes: [
       "IdEquipo",
@@ -320,6 +324,10 @@ export const armarPdfSolicitudSocket = async (data: any) => {
       "Marca.Marca",
       "Modelo.Modelo",
       "EquipoSeries.Serie",
+      "EquipoSeries.Identificador",
+      "TipoEquipo.TipoEquipo",
+      "EquipoSeries.TiempoVida",
+      "EquipoSeries.Observacion",
     ],
     include: [
       {
@@ -327,7 +335,9 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         attributes: [],
         required: true,
         where: {
-          IdEquipoSerie: { [Op.in]: (equipoIds.join(",")).split(",").map(Number) },
+          IdEquipoSerie: {
+            [Op.in]: equipoIds.join(",").split(",").map(Number),
+          },
         },
       },
       {
@@ -345,9 +355,68 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         attributes: [],
         required: true,
       },
+      {
+        model: TipoEquipo,
+        attributes: [],
+        required: true,
+      },
     ],
   });
-  console.log("pequeña", Query0);
+
+  const equipoIdsQuery0 = Query0.map((equipo: any) => equipo.IdEquipo);
+
+  Equipo.hasMany(EquipoDescuento, { foreignKey: "Equipo_id" });
+  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
+
+  const Query1 = await Equipo.findAll({
+    raw: true,
+    attributes: [
+      "IdEquipo",
+      "Cliente.CodCliente",
+      "Marca.Marca",
+      "Modelo.Modelo",
+      "TipoEquipo.TipoEquipo",
+      "EquipoDescuentos.Tiempo",
+      "EquipoDescuentos.Precio",
+    ],
+    include: [
+      {
+        model: EquipoDescuento,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: Cliente,
+        attributes: [],
+        required: true,
+      },
+      {
+        model: TipoEquipo,
+        attributes: [],
+        required: true,
+      },
+    ],
+    where: {
+      IdEquipo: {
+        [Op.in]: equipoIdsQuery0,
+      },
+    },
+  });
+  console.log("av", Query1);
+  console.log("av", equipoIdsQuery0);
 
   return new Promise<Uint8Array>((resolve, reject) => {
     try {
@@ -367,22 +436,64 @@ export const armarPdfSolicitudSocket = async (data: any) => {
       });
 
       // Insertar la imagen
-      const imgPath = "src/db/Fondopdf.png";
-      doc.image(imgPath, {
-        fit: [250, 300],
+      const imgPath = "src/assets/Pantalla1.png";
+      doc.image(imgPath, 0, 0, {
+        fit: [doc.page.width, doc.page.height],
         align: "center",
         valign: "center",
       });
+      const fecha = new Date();
 
+      // Obtener día, mes y año
+      const dia = fecha.getDate().toString().padStart(2, "0"); // Obtener el día del mes (con ceros a la izquierda si es necesario)
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, "0"); // Obtener el mes (se suma 1 ya que los meses son indexados desde 0)
+      const año = fecha.getFullYear();
 
-      doc.fontSize(12).text(data.Celular, 75, 177);
-      doc.fontSize(12).text(data.Accesorio, 75, 200);
+      // Formatear la fecha como "dd/mm/yyyy"
+      const fechaFormateada = `${dia}/${mes}/${año}`;
+
+      doc.fontSize(12).text(fechaFormateada, 508, 167, { width: 400 });
+      doc.fontSize(12).text(data.datosolicitud, 72, 167);
+      doc.fontSize(12).text(data.datomotivo, 63, 185);
 
       // Empezamos con la Lógica
-      let yPos = 220; // Posición inicial
-      const lineSpacing = 10; // Espaciado entre líneas
+      let yPos = 320; // Posición inicial
+      const lineSpacing = 15; // Espaciado entre líneas
+      let zPos = 547; // Posición inicial
 
-      // Iterar sobre los elementos de Query3 y mostrarlos en el PDF
+      Query0.forEach((item: any) => {
+        if (item.TipoEquipo === "Chip") {
+          doc.fontSize(12).text(`${item.TipoEquipo} ${item.Marca}`, 20, yPos);
+        } else {
+          doc
+            .fontSize(12)
+            .text(`${item.TipoEquipo} ${item.Marca} ${item.Modelo}`, 20, yPos);
+        }
+        doc.fontSize(12).text(`${item.Serie}`, 210, yPos);
+        doc.fontSize(12).text(`${item.Identificador}`, 340, yPos);
+        doc
+          .fontSize(12)
+          .text(`${item.TiempoVida} meses`, 475, yPos, { width: 400 });
+        yPos += lineSpacing;
+
+        if (item.TipoEquipo === "Chip") {
+          doc.fontSize(12).text(`${item.TipoEquipo} ${item.Marca}`, 20, zPos);
+        } else {
+          doc
+            .fontSize(12)
+            .text(`${item.TipoEquipo} ${item.Marca} ${item.Modelo}`, 20, zPos);
+        }
+
+        doc.fontSize(12).text(`${item.Observacion}`, 210, zPos);
+
+        zPos += lineSpacing;
+      });
+      Query3.forEach((item: any) => {
+        doc.fontSize(12).text(`${item.Modelo}`, 20, yPos);
+        yPos += lineSpacing;
+      });
+      console.log("yarapessadsdadasd", Query3);
+      /* Iterar sobre los elementos de Query3 y mostrarlos en el PDF
       Query3.forEach((item: any) => {
         doc.fontSize(12).text(`IdEquipo: ${item.IdEquipo}`, 75, yPos);
         yPos += lineSpacing;
@@ -392,6 +503,29 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         yPos += lineSpacing;
         doc.fontSize(12).text(`Modelo: ${item.Modelo}`, 150, yPos);
         yPos += lineSpacing * 2; // Espaciado adicional entre elementos
+      });*/
+      doc.addPage();
+
+      // Insertar la misma imagen en la segunda página
+      const imgPath1 = "src/assets/Pantalla2.png";
+      doc.image(imgPath1, 0, 0, {
+        fit: [doc.page.width, doc.page.height],
+        align: "center",
+        valign: "center",
+      });
+
+      let y1Pos = 250; // Posición inicial
+      const line1Spacing = 15; // Espaciado entre líneas
+      let z1Pos = 547; // Posición inicial
+
+      Query0.forEach((item: any) => {
+        if (item.TipoEquipo === "Chip") {
+        } else {
+          doc
+            .fontSize(12)
+            .text(`${item.TipoEquipo} ${item.Marca} ${item.Modelo}`, 20, y1Pos);
+        }
+        y1Pos += line1Spacing;
       });
 
       doc.end();
