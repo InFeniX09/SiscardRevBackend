@@ -228,7 +228,8 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
     );
     // Recorre los datos y crea el nuevo JSON
     const equiposSerieJSON = data.map((item: any) => {
-      const today = moment(item.FcIngreso).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
+      const today =
+        moment(item.FcIngreso).format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z";
       const clienteId = clienteMap.get(item.CodCliente);
       const marcaId = marcaMap.get(item.Marca);
       const modeloId = modeloMap.get(item.Modelo);
@@ -246,9 +247,8 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
         Estado: estados,
       };
     });
-
+    //Final (Ingreso SERIES)
     const insercionmasiva = await EquipoSerie.bulkCreate(equiposSerieJSON);
-    // Inserta los datos masivamente usando Sequelize
     const equiposSerieJSON1 = insercionmasiva.map((item: any) => {
       return {
         EquipoSerie_id: item.IdEquipoSerie,
@@ -256,12 +256,14 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
         Observacion: "Ingreso de Stock por Software",
       };
     });
-    const insercionmasiva1:any = await EquipoControl.bulkCreate(equiposSerieJSON1);
-    //
+    //Final (Ingreso Control)
+    const insercionmasiva1: any = await EquipoControl.bulkCreate(
+      equiposSerieJSON1
+    );
     const stockActual: any = await EquipoStock.findOne({
       where: { Equipo_id: data.test[0].Equipo, Usuario_id: 5 },
-    });
-/*
+    }); 
+    /*
     if (!stockActual) {
       await EquipoStock.create({
         StockDisponible: equiposSerieJSON.length,
