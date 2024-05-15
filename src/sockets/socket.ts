@@ -12,6 +12,7 @@ import {
   listarEquipoxClxTexUsuSocket,
   listarSolicitud,
   listarTicketSocket,
+  listarTipoDocumento,
   listarTipoMotivoSocket,
   listarTipoSolicitudSocket,
 } from "../controllers/Ayuda/centro-atencion";
@@ -54,8 +55,14 @@ class Sockets {
     // On connection
     this.io.on("connection", (socket) => {
       console.log(`${socket.id} connected.`);
-
+      /*Datos perosnales*/
+      socket.on("listar-tipodocumento", async (data, callback) => {
+        const json = await listarTipoDocumento();
+        console.log("json", json);
+        callback(json);
+      });
       /*centro-atencion PAGE*/
+      
       socket.on("armarpdf-solicitud", async (data, callback) => {
         const json = await armarPdfSolicitudSocket(data);
         callback(json);

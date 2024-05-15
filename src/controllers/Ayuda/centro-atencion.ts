@@ -19,6 +19,8 @@ import TipoEquipo from "../../models/tipoequipo";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import EquipoDescuento from "../../models/equipodescuento";
+import Area from "../../models/area";
+import TipoDocumento from "../../models/tipodocumento";
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
@@ -60,6 +62,7 @@ export const listarSolicitud = async (data: any) => {
       "TipoSolicitud.TipoSolicitud",
       "TipoMotivo.TipoMotivo",
       "Usuario.Usuario",
+      "Usuario.IdUsuario",
       "Estado",
     ],
     include: [
@@ -415,9 +418,48 @@ export const armarPdfSolicitudSocket = async (data: any) => {
       },
     },
   });
-  console.log("av", Query1);
-  console.log("av", equipoIdsQuery0);
 
+  Entidad.hasMany(Usuario, { foreignKey: "Entidad_id" });
+  Entidad.belongsTo(Area, { foreignKey: "Area_id" });
+
+  const UsuarioQuery = await Entidad.findAll({
+    raw: true,
+    attributes: ["Area.Area", "NombreCompleto"],
+    include: [
+      {
+        model: Usuario,
+        attributes: [],
+        required: true,
+        where: {
+          IdUsuario: data.usuario_id,
+        },
+      },
+      {
+        model: Area,
+        attributes: [],
+        required: true,
+      },
+    ],
+  });
+  const UsuarioQuery1 = await Entidad.findAll({
+    raw: true,
+    attributes: ["Area.Area", "NombreCompleto"],
+    include: [
+      {
+        model: Usuario,
+        attributes: [],
+        required: true,
+        where: {
+          IdUsuario: data.datousuario,
+        },
+      },
+      {
+        model: Area,
+        attributes: [],
+        required: true,
+      },
+    ],
+  });
   return new Promise<Uint8Array>((resolve, reject) => {
     try {
       const doc = new PDFDocument({
@@ -492,21 +534,15 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         doc.fontSize(12).text(`${item.Modelo}`, 20, yPos);
         yPos += lineSpacing;
       });
-      console.log("yarapessadsdadasd", Query3);
-      /* Iterar sobre los elementos de Query3 y mostrarlos en el PDF
-      Query3.forEach((item: any) => {
-        doc.fontSize(12).text(`IdEquipo: ${item.IdEquipo}`, 75, yPos);
-        yPos += lineSpacing;
-        doc.fontSize(12).text(`CodCliente: ${item.CodCliente}`, 100, yPos);
-        yPos += lineSpacing;
-        doc.fontSize(12).text(`Marca: ${item.Marca}`, 125, yPos);
-        yPos += lineSpacing;
-        doc.fontSize(12).text(`Modelo: ${item.Modelo}`, 150, yPos);
-        yPos += lineSpacing * 2; // Espaciado adicional entre elementos
-      });*/
-      doc.addPage();
 
-      // Insertar la misma imagen en la segunda página
+      UsuarioQuery.forEach((usuario: any) => {
+        doc.fontSize(12).text(`${usuario.NombreCompleto}`, 80, 202);
+        doc.fontSize(12).text(`${usuario.Area}`, 505, 190, { width: 400 });
+      });
+      //-------------------------------
+      doc.addPage(); //PAGINA 2
+      //-------------------------------
+      //Fondo de Pantalla
       const imgPath1 = "src/assets/Pantalla2.png";
       doc.image(imgPath1, 0, 0, {
         fit: [doc.page.width, doc.page.height],
@@ -514,9 +550,34 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         valign: "center",
       });
 
+      UsuarioQuery.forEach((usuario: any) => {
+        doc
+          .fontSize(11)
+          .text(`Recibido por: ${usuario.NombreCompleto}`, 20, 650, {
+            width: 400,
+          });
+        doc.fontSize(11).text(`Area: ${usuario.Area}`, 20, 665, { width: 400 });
+
+        console.log("Gonzalooooo", usuario.NombreCompleto);
+      });
+      UsuarioQuery1.forEach((usuario: any) => {
+        doc
+          .fontSize(11)
+          .text(`Recibido por: ${usuario.NombreCompleto}`, 370, 650, {
+            width: 400,
+          });
+        doc.fontSize(11).text(`Area: ${usuario.Area}`, 370, 665, { width: 400 });
+        console.log("Gonzalooooo", usuario.NombreCompleto);
+      });
       let y1Pos = 250; // Posición inicial
       const line1Spacing = 15; // Espaciado entre líneas
       let z1Pos = 547; // Posición inicial
+
+      const formattedData = Query1.map((equipo: any) => {
+        return `${equipo.Tiempo}mes:S/.${equipo.Precio.toFixed(2)}`;
+      }).join(";");
+
+      console.log("sue", formattedData);
 
       Query0.forEach((item: any) => {
         if (item.TipoEquipo === "Chip") {
@@ -524,8 +585,11 @@ export const armarPdfSolicitudSocket = async (data: any) => {
           doc
             .fontSize(12)
             .text(`${item.TipoEquipo} ${item.Marca} ${item.Modelo}`, 20, y1Pos);
+          doc.fontSize(12).text(`${formattedData}`, 210, y1Pos);
         }
         y1Pos += line1Spacing;
+        console.log("sara", formattedData);
+        console.log("sara1", `${item.TipoEquipo} ${item.Marca} ${item.Modelo}`);
       });
 
       doc.end();
@@ -535,4 +599,21 @@ export const armarPdfSolicitudSocket = async (data: any) => {
       reject(error); // Rechazar la promesa en caso de error
     }
   });
+};
+
+
+export const listarTipoDocumento = async () => {
+  const Query3 = await TipoDocumento.findAll({
+    raw: true,
+    attributes: [
+      "IdTipoDocumento",
+      "TipoDocumento",
+      "Agrupacion",
+      "Estado",
+    ],
+  
+    where: {},
+  });
+
+  return Query3;
 };

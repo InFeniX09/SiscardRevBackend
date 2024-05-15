@@ -13,7 +13,9 @@ const TipoDocumento = db[0].define(
     TipoDocumento: {
       type: DataTypes.STRING,
     },
-   
+    Agrupacion: {
+      type: DataTypes.STRING,
+    },
     Estado: {
       type: DataTypes.STRING,
     },

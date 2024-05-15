@@ -28,7 +28,7 @@ export const enviarCorreoSocket = async (data:any) => {
   const info = await transporter.sendMail({
     from: '"SiscardRevolution🎊" <SiscardRevolution@siscardperu.pe>', // sender address
     to: "infenix.reborn@gmail.com", // list of receivers
-    cc:"",
+    cc:"sistemas.sp@siscardperu.pe",
     subject: "Pruebas Testing SR ✔", // Subject line
     text: "Hello world?", // plain text body
     html: "<b>Ya estamos llegandoooooo</b>", // html body
