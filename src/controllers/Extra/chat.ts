@@ -5,10 +5,11 @@ import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
 import { Op, Sequelize } from "sequelize";
 
-export const listarchatSocket = async (data:any) => {
-
-  let pDeUsuario_id= data.DeUsuario_id ? parseInt(data.DeUsuario_id) : null;
-  let pParaUsuario_id= data.ParaUsuario_id ? parseInt(data.ParaUsuario_id) : null;
+export const listarchatSocket = async (data: any) => {
+  let pDeUsuario_id = data.DeUsuario_id ? parseInt(data.DeUsuario_id) : null;
+  let pParaUsuario_id = data.ParaUsuario_id
+    ? parseInt(data.ParaUsuario_id)
+    : null;
   const Query3 = await Mensaje.findAll({
     raw: true,
     attributes: [
@@ -24,17 +25,15 @@ export const listarchatSocket = async (data:any) => {
       [Op.or]: [
         {
           DeUsuario_id: pDeUsuario_id,
-          ParaUsuario_id: pParaUsuario_id
+          ParaUsuario_id: pParaUsuario_id,
         },
         {
           DeUsuario_id: pParaUsuario_id,
-          ParaUsuario_id: pDeUsuario_id
-        }
-      ]
+          ParaUsuario_id: pDeUsuario_id,
+        },
+      ],
     },
-    order: [
-      ["FechaCreacion", "ASC"]
-    ]
+    order: [["FechaCreacion", "ASC"]],
   });
 
   return Query3;
@@ -65,7 +64,19 @@ export const listarUsuarioSocket = async (data: any) => {
 
   const Query3 = await Usuario.findAll({
     raw: true,
-    attributes: ["IdUsuario", "Usuario"],
+    attributes: [
+      "IdUsuario",
+      "Usuario",
+      "Clave",
+      "Correo",
+      "Telefono",
+      "FcIngreso",
+      "FcBaja",
+      "RutaImagen",
+      "Entidad_id",
+      "Online",
+      "Estado",
+    ],
     include: [
       {
         model: Entidad,

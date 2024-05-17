@@ -33,6 +33,9 @@ const Usuario = db[0].define(
     Entidad_id: {
       type: DataTypes.INTEGER,
     },
+    Online: {
+      type: DataTypes.BOOLEAN,
+    },
     Estado: {
       type: DataTypes.STRING,
     },
