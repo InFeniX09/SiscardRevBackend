@@ -19,7 +19,7 @@ const Solicitud = db[0].define(
       type: DataTypes.INTEGER,
     },
     FcCreacion: {
-      type: DataTypes.DATE,
+      type: DataTypes.TIME,
     },
     Estado: {
       type: DataTypes.STRING,

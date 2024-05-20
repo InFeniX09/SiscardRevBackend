@@ -8,10 +8,12 @@ const Puesto = db[0].define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-
     },
     Puesto: {
       type: DataTypes.STRING,
+    },
+    Area_id: {
+      type: DataTypes.NUMBER,
     },
     Estado: {
       type: DataTypes.STRING,

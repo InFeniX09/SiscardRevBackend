@@ -5,7 +5,6 @@ import menuRouth from "../routes/menu";
 import authRouth from "../routes/auth";
 import infraestructuraRouth from "../routes/infraestructura";
 import CentroAtencionRouth from "../routes/centro-atencion";
-import SelectRouth from "../routes/select";
 import InventarioDepartamentalRouth from "../routes/inventario-departamental";
 import LogisticaRouth from "../routes/logistica";
 import { connect } from "../db/connection";
@@ -61,7 +60,6 @@ class Server {
       this.paths.InventarioDepartamental,
       InventarioDepartamentalRouth
     );
-    this.app.use(this.paths.Select, SelectRouth);
     this.app.use(this.paths.Menu, menuRouth);
     this.app.use(this.paths.Logistica, LogisticaRouth);
   }

@@ -21,6 +21,7 @@ import fs from "fs";
 import EquipoDescuento from "../../models/equipodescuento";
 import Area from "../../models/area";
 import TipoDocumento from "../../models/tipodocumento";
+import Puesto from "../../models/puesto";
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
@@ -55,30 +56,26 @@ export const listarSolicitud = async (data: any) => {
   Solicitud.belongsTo(TipoMotivo, { foreignKey: "TipoMotivo_id" });
   Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
 
-  const Query3 = await Solicitud.findAll({
-    raw: true,
+  const results = await Solicitud.findAll({
     attributes: [
       "IdSolicitud",
-      "TipoSolicitud.TipoSolicitud",
-      "TipoMotivo.TipoMotivo",
-      "Usuario.Usuario",
-      "Usuario.IdUsuario",
+      "FcCreacion",
       "Estado",
     ],
     include: [
       {
         model: TipoSolicitud,
-        attributes: [],
+        attributes: ["TipoSolicitud"],
         required: true,
       },
       {
         model: TipoMotivo,
-        attributes: [],
+        attributes: ["TipoMotivo"],
         required: true,
       },
       {
         model: Usuario,
-        attributes: [],
+        attributes: ["Usuario", "IdUsuario"],
         required: true,
       },
     ],
@@ -90,6 +87,17 @@ export const listarSolicitud = async (data: any) => {
           : "%",
       },
     },
+  });
+
+  const Query3 = results.map(result => {
+    const plainResult = result.get({ plain: true });
+    return {
+      ...plainResult,
+      TipoSolicitud: plainResult.TipoSolicitud.TipoSolicitud,
+      TipoMotivo: plainResult.TipoMotivo.TipoMotivo,
+      Usuario: plainResult.Usuario.Usuario,
+      IdUsuario: plainResult.Usuario.IdUsuario,
+    };
   });
 
   return Query3;
@@ -566,7 +574,9 @@ export const armarPdfSolicitudSocket = async (data: any) => {
           .text(`Recibido por: ${usuario.NombreCompleto}`, 370, 650, {
             width: 400,
           });
-        doc.fontSize(11).text(`Area: ${usuario.Area}`, 370, 665, { width: 400 });
+        doc
+          .fontSize(11)
+          .text(`Area: ${usuario.Area}`, 370, 665, { width: 400 });
         console.log("Gonzalooooo", usuario.NombreCompleto);
       });
       let y1Pos = 250; // Posición inicial
@@ -601,18 +611,36 @@ export const armarPdfSolicitudSocket = async (data: any) => {
   });
 };
 
-
 export const listarTipoDocumento = async () => {
   const Query3 = await TipoDocumento.findAll({
     raw: true,
-    attributes: [
-      "IdTipoDocumento",
-      "TipoDocumento",
-      "Agrupacion",
-      "Estado",
-    ],
-  
+    attributes: ["IdTipoDocumento", "TipoDocumento", "Agrupacion", "Estado"],
+
     where: {},
+  });
+
+  return Query3;
+};
+
+export const listarArea = async () => {
+  const Query3 = await Area.findAll({
+    raw: true,
+    attributes: ["IdArea", "Area", "Estado"],
+
+    where: {},
+  });
+
+  return Query3;
+};
+
+export const listarPuesto = async (data: any) => {
+  console.log('2',data);
+  console.log('2',JSON.stringify(data));
+
+  const Query3 = await Puesto.findAll({
+    raw: true,
+    attributes: ["IdPuesto", "Puesto", "Estado"],
+    where: { Area_id: data.Area },
   });
 
   return Query3;

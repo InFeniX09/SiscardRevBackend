@@ -9,7 +9,9 @@ import {
   crearSolicitudSocket,
   crearTicketSocket,
   listarAccesorioxClxTexUsuSocket,
+  listarArea,
   listarEquipoxClxTexUsuSocket,
+  listarPuesto,
   listarSolicitud,
   listarTicketSocket,
   listarTipoDocumento,
@@ -58,6 +60,16 @@ class Sockets {
       /*Datos perosnales*/
       socket.on("listar-tipodocumento", async (data, callback) => {
         const json = await listarTipoDocumento();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-area", async (data, callback) => {
+        const json = await listarArea();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-puesto", async (data, callback) => {
+        const json = await listarPuesto(data);
         console.log("json", json);
         callback(json);
       });
