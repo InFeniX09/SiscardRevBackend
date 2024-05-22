@@ -1,6 +1,8 @@
 import { Server as SocketIOServer } from "socket.io";
 import {
   crearMensajeSocket,
+  generarExcelReporte,
+  listarReporte,
   listarUsuarioSocket,
   listarchatSocket,
 } from "../controllers/Extra/chat";
@@ -57,6 +59,17 @@ class Sockets {
     // On connection
     this.io.on("connection", (socket) => {
       console.log(`${socket.id} connected.`);
+      /*Extras*/
+      socket.on("listar-reporte", async (data, callback) => {
+        const json = await listarReporte();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("generar-excelreporte", async (data, callback) => {
+        const json = await generarExcelReporte(data);
+        console.log("json", json);
+        callback(json);
+      });
       /*Datos perosnales*/
       socket.on("listar-tipodocumento", async (data, callback) => {
         const json = await listarTipoDocumento();
@@ -74,7 +87,6 @@ class Sockets {
         callback(json);
       });
       /*centro-atencion PAGE*/
-      
       socket.on("armarpdf-solicitud", async (data, callback) => {
         const json = await armarPdfSolicitudSocket(data);
         callback(json);

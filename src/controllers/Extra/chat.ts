@@ -1,9 +1,11 @@
 import { Request, Response, request, response } from "express";
-
 import Mensaje from "../../models/mensaje";
 import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
-import { Op, Sequelize } from "sequelize";
+import { Op, Sequelize, QueryTypes } from "sequelize";
+import Reporte from "../../models/reporte";
+import  db1  from "../../db/connectionPoas";
+const ExcelJS = require("exceljs");
 
 export const listarchatSocket = async (data: any) => {
   let pDeUsuario_id = data.DeUsuario_id ? parseInt(data.DeUsuario_id) : null;
@@ -96,4 +98,46 @@ export const listarUsuarioSocket = async (data: any) => {
     },
   });
   return Query3;
+};
+/**/
+export const listarReporte = async () => {
+  const Query3 = await Reporte.findAll({
+    raw: true,
+    attributes: ["IdReporte", "Reporte", "Query", "TipoReporte", "Estado"],
+    where: {
+      Estado: "A",
+    },
+  });
+  return Query3;
+};
+export const generarExcelReporte = async (data: any) => {
+  const reporte: any = await Reporte.findByPk(data.Reporte, {
+    attributes: ["Query"],
+    raw: true,
+  });
+
+  const query = reporte.Query;
+
+  const dataResult = await db1.query(query, { type: QueryTypes.SELECT });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Reporte");
+
+  // Agregar encabezados de columnas
+  worksheet.columns = Object.keys(dataResult[0]).map((key) => ({
+    header: key,
+    key,
+    width: 20,
+  }));
+
+  // Agregar filas con los datos
+  dataResult.forEach((row) => {
+    worksheet.addRow(row);
+  });
+
+  // Escribir el archivo en un buffer
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  // Enviar el buffer al frontend
+  return { buffer: buffer.toString("base64") };
 };
