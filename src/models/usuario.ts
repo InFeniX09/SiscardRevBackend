@@ -15,6 +15,9 @@ const Usuario = db[0].define(
     Clave: {
       type: DataTypes.STRING,
     },
+    ClaveTemporal: {
+      type: DataTypes.STRING,
+    },
     Correo: {
       type: DataTypes.STRING,
     },

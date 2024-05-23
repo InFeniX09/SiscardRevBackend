@@ -21,6 +21,7 @@ import {
   listarTipoSolicitudSocket,
 } from "../controllers/Ayuda/centro-atencion";
 import {
+  cambioClave,
   crearEquipoDescuentoSocket,
   crearEquipoSocket,
   crearEquipoStockSocket,
@@ -37,6 +38,8 @@ import {
   listarModeloSocket,
   listarTipoEquipoSocket,
   listarTipoEquipoxClSocket,
+  recuperarClave,
+  recuperarClaveToken,
 } from "../controllers/Logistica/gestion-equipo";
 import {
   cargaMasivaEquipoSocket,
@@ -145,6 +148,21 @@ class Sockets {
       /**/
       socket.on("enviarcorreo", async (data, callback) => {
         const json = await enviarCorreoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("recuperar-clave", async (data, callback) => {
+        const json = await recuperarClave(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("recuperacion-clavetoken", async (data, callback) => {
+        const json = await recuperarClaveToken(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("cambio-clave", async (data, callback) => {
+        const json = await cambioClave(data);
         console.log("json", json);
         callback(json);
       });

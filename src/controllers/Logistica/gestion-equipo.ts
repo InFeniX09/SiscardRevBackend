@@ -50,6 +50,85 @@ export const enviarCorreoSocket = async (data: any) => {
   console.log("Message sent: %s", info.messageId);
 };
 
+export const recuperarClave = async (data: any) => {
+  const Query0 = await Usuario.findOne({
+    where: { Correo: data.Email },
+  });
+
+  const clave = Math.floor(Math.random() * 900000) + 100000;
+
+  if (Query0) {
+    const Query1 = await Usuario.update(
+      {
+        ClaveTemporal: clave,
+      },
+      {
+        where: { Correo: data.Email },
+      }
+    );
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use `true` for port 465, `false` for all other ports
+    auth: {
+      user: "infenix.reborn@gmail.com",
+      pass: "fzf zrz mhg hyq otrl",
+    },
+  });
+
+  let mailOptions: any = {
+    from: '"SiscardRevolution🎊"<SiscardRevolution@siscardperu.pe>', // sender address
+    to: data.Email, // list of receivers
+    cc: "",
+    subject: "Recuperación de Clave✔", // Subject line
+    html: `<div>
+            <p>
+            🚨Se ha solicitado una recuperación de clave, usa el siguiente token para recuperar tu contraseña:
+            </p>
+            <span>
+              <strong>${clave}</strong>
+            </span>
+            <p>
+              si no solicitaste este token, omite este
+              mensaje, Gracias!
+            </p>
+          </div>`,
+  };
+
+  const info = await transporter.sendMail(mailOptions);
+
+  console.log("Message sent: %s", info.messageId);
+};
+
+export const recuperarClaveToken = async (data: any) => {
+  const Query0 = await Usuario.findOne({
+    where: { Correo: data.Email, ClaveTemporal: data.Token },
+  });
+  if (Query0) {
+    return "Existe";
+  } else {
+    return "No existe";
+  }
+};
+export const cambioClave = async (data: any) => {
+  const Query1 = await Usuario.update(
+    {
+      Clave: data.Clave,
+    },
+    {
+      where: { Correo: data.Email },
+    }
+  );
+
+  if (Query1) {
+    return "Existe";
+  } else {
+    return "No existe";
+  }
+};
+
 export const listarClasificacionEquipoSocket = async () => {
   const Query3 = await TipoEquipo.findAll({
     raw: true,
