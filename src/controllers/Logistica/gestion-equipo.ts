@@ -15,7 +15,7 @@ import EquipoSerie from "../../models/equiposerie";
 import EquipoControl from "../../models/equipocontrol";
 const nodemailer = require("nodemailer");
 
-export const enviarCorreoSocket = async (data:any) => {
+export const enviarCorreoSocket = async (data: any) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -25,21 +25,27 @@ export const enviarCorreoSocket = async (data:any) => {
       pass: "fzf zrz mhg hyq otrl",
     },
   });
-  const info = await transporter.sendMail({
+
+  let mailOptions: any = {
     from: '"SiscardRevolution🎊" <SiscardRevolution@siscardperu.pe>', // sender address
     to: "infenix.reborn@gmail.com", // list of receivers
-    cc:"sistemas.sp@siscardperu.pe",
+    cc: "",
     subject: "Pruebas Testing SR ✔", // Subject line
     text: "Hello world?", // plain text body
-    html: "<b>Ya estamos llegandoooooo</b>", // html body
-    attachments: [
+    html: "<b> Ya estamos llegandoooooo </b>", // html body
+  };
+  // Si el archivo adjunto existe, añadirlo a las opciones del correo
+  if (data.pdf) {
+    mailOptions.attachments = [
       {
-        filename: 'archivo1.pdf', // Nombre del primer archivo adjunto
+        filename: "archivo1.pdf", // Nombre del primer archivo adjunto
         content: data.pdf, // Contenido del primer archivo PDF
-        encoding: 'base64' // Codificación del contenido
+        encoding: "base64", // Codificación del contenido
       },
-    ]
-  });
+    ];
+  }
+
+  const info = await transporter.sendMail(mailOptions);
 
   console.log("Message sent: %s", info.messageId);
 };
