@@ -35,6 +35,7 @@ import {
   listarEquipoSocket,
   listarEquipoxClxTCSocket,
   listarMarcaSocket,
+  listarMarcaXTipoEquipo,
   listarMarcaxTipoEquipo,
   listarModeloSocket,
   listarTipoEquipoSocket,
@@ -206,12 +207,10 @@ class Sockets {
 
       socket.on("crear-tipoequipo", async (data, callback) => {
         const json = await crearTipoEquipoSocket(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("crear-marca", async (data, callback) => {
         const json = await crearMarcaSocket(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("crear-modelo", async (data, callback) => {
@@ -268,6 +267,12 @@ class Sockets {
 
       socket.on("listar-MarcaxTipoEquipo", async (data, callback) => {
         const json = await listarMarcaxTipoEquipo();
+        console.log("json", json);
+        callback(json);
+      });
+
+      socket.on("listar-marcaxtipoequipo", async (data, callback) => {
+        const json = await listarMarcaXTipoEquipo(data);
         console.log("json", json);
         callback(json);
       });
