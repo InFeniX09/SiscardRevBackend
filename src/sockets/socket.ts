@@ -2,6 +2,7 @@ import { Server as SocketIOServer } from "socket.io";
 import {
   crearMensajeSocket,
   generarExcelReporte,
+  listarMenuxUsuarioxPerfil,
   listarReporte,
   listarUsuarioSocket,
   listarchatSocket,
@@ -63,6 +64,11 @@ class Sockets {
     this.io.on("connection", (socket) => {
       console.log(`${socket.id} connected.`);
       /*Extras*/
+      socket.on("listar-menuxusuarioxperfil", async (data, callback) => {
+        const json = await listarMenuxUsuarioxPerfil(data);
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("listar-reporte", async (data, callback) => {
         const json = await listarReporte();
         console.log("json", json);

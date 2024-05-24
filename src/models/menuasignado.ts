@@ -1,29 +1,20 @@
 import { DataTypes } from "sequelize";
 import { db } from "../db/connection";
 
-const Menu = db[0].define(
-  "Menu",
+const MenuAsignado = db[0].define(
+  "MenuAsignado",
   {
-    IdMenu: {
+    IdMenuAsignado: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    Menu: {
-      type: DataTypes.STRING,
-    },
-    Ruta: {
-      type: DataTypes.STRING,
-    },
-    RutaImagen: {
-      type: DataTypes.STRING,
-    },
-    Comando: {
-      type: DataTypes.STRING,
-    },
-    TipoMenu_id: {
+    Menu_id: {
       type: DataTypes.INTEGER,
     },
-    Padre_id: {
+    Usuario_id: {
+      type: DataTypes.INTEGER,
+    },
+    Perfil_id: {
       type: DataTypes.INTEGER,
     },
     Estado: {
@@ -42,4 +33,4 @@ const Menu = db[0].define(
   }
 );
 
-export default Menu;
+export default MenuAsignado;

@@ -4,7 +4,9 @@ import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
 import { Op, Sequelize, QueryTypes } from "sequelize";
 import Reporte from "../../models/reporte";
-import  db1  from "../../db/connectionPoas";
+import db1 from "../../db/connectionPoas";
+import Menu from "../../models/menu";
+import sequelize from "sequelize";
 const ExcelJS = require("exceljs");
 
 export const listarchatSocket = async (data: any) => {
@@ -140,4 +142,18 @@ export const generarExcelReporte = async (data: any) => {
 
   // Enviar el buffer al frontend
   return { buffer: buffer.toString("base64") };
+};
+export const listarMenuxUsuarioxPerfil = async (data: any) => {
+  const menus = await Menu.findAll({
+    raw: true,
+    where: {
+      IdMenu: {
+        [Op.in]: [
+          sequelize.literal(`(SELECT Menu_id FROM MenuAsignado WHERE Perfil_id=${data.Puesto_id}) UNION
+         (SELECT Menu_id FROM MenuAsignado WHERE Usuario_id=${data.Usuario_id})`),
+        ],
+      },
+    },
+  });
+  return menus;
 };
