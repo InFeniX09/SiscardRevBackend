@@ -52,7 +52,10 @@ import {
   listarEquipoStockSocket,
   listarEquipoxClasificacionSocket,
 } from "../controllers/Logistica/gestion-stock";
-import { listarClienteSocket } from "../controllers/Sistemas/gestion-entidad";
+import {
+  crearUsuario,
+  listarClienteSocket,
+} from "../controllers/Sistemas/gestion-entidad";
 
 class Sockets {
   private io: SocketIOServer;
@@ -66,7 +69,9 @@ class Sockets {
     // On connection
     this.io.on("connection", (socket) => {
       console.log(`${socket.id} connected.`);
-      /*Extras*/
+      //-------------------------
+      //Extras
+      //-------------------------
       socket.on("listar-menuxusuarioxperfil", async (data, callback) => {
         const json = await listarMenuxUsuarioxPerfil(data);
         console.log("json", json);
@@ -82,7 +87,9 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      /*Datos perosnales*/
+      //-------------------------
+      //Datos Personales
+      //-------------------------
       socket.on("listar-tipodocumento", async (data, callback) => {
         const json = await listarTipoDocumento();
         console.log("json", json);
@@ -98,7 +105,9 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      /*centro-atencion PAGE*/
+      //-------------------------
+      //Centro Atencion
+      //-------------------------
       socket.on("armarpdf-solicitud", async (data, callback) => {
         const json = await armarPdfSolicitudSocket(data);
         callback(json);
@@ -154,7 +163,9 @@ class Sockets {
           callback("no");
         }
       });
-      /**/
+      //-------------------------
+      //AUTH
+      //-------------------------
       socket.on("enviarcorreo", async (data, callback) => {
         const json = await enviarCorreoSocket(data);
         console.log("json", json);
@@ -175,7 +186,9 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      /*Gestion-Equipo*/
+      //-------------------------
+      //Gestion-Equipo
+      //-------------------------
       socket.on("listar-clasificacionequipo", async (data, callback) => {
         const json = await listarClasificacionEquipoSocket();
         console.log("json", json);
@@ -233,7 +246,9 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      /*Gestion-Stock*/
+      //-------------------------
+      //Gestion-Stock
+      //-------------------------
       socket.on("listar-equipostock", async (data, callback) => {
         const json = await listarEquipoStockSocket();
         console.log("json", json);
@@ -281,23 +296,34 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      socket.on("listar-equipoxareaxclientextipoequipo", async (data, callback) => {
-        const json = await listarEquipoXAreaXClienteXTipoEquipo(data);
-        console.log("json", json);
-        callback(json);
-      });
+      socket.on(
+        "listar-equipoxareaxclientextipoequipo",
+        async (data, callback) => {
+          const json = await listarEquipoXAreaXClienteXTipoEquipo(data);
+          console.log("json", json);
+          callback(json);
+        }
+      );
       socket.on("listar-equipoxclxtc", async (data, callback) => {
         const json = await listarEquipoxClxTCSocket(data);
         console.log("json", json);
         callback(json);
       });
-      /*Gestion-Entidad*/
+      //-------------------------
+      //Gestion-Entidad
+      //-------------------------
       socket.on("listar-cliente", async (data, callback) => {
         const json = await listarClienteSocket();
         console.log("json", json);
         callback(json);
       });
-      /**/
+      socket.on("crear-usuario", async (data, callback) => {
+        const json = await crearUsuario(data);
+        callback(json);
+      });
+      //-------------------------
+      //Gestion-Entidad
+      //-------------------------
       socket.on("crear-ticket", async (data, callback) => {
         const data1 = await crearTicketSocket(data);
         const data2 = await listarTicketSocket(data);
@@ -323,7 +349,5 @@ class Sockets {
     });
   }
 }
-
-
 
 export default Sockets;

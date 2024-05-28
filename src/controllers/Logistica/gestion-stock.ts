@@ -13,8 +13,8 @@ import Area from "../../models/area";
 export const listarEquipoStockSocket = async () => {
   EquipoStock.belongsTo(Usuario, { foreignKey: "Usuario_id" });
   EquipoStock.belongsTo(Equipo, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
 
   const Query3 = await EquipoStock.findAll({
@@ -22,7 +22,7 @@ export const listarEquipoStockSocket = async () => {
     attributes: [
       "IdEquipoStock",
       "Equipo.Cliente.CodCliente",
-      "Equipo.Marca.Marca",
+      "Equipo.Modelo.Marca.Marca",
       "Equipo.Modelo.Modelo",
       "Usuario.Usuario",
       "StockActual",
@@ -41,14 +41,16 @@ export const listarEquipoStockSocket = async () => {
         required: true,
         include: [
           {
-            model: Marca,
-            attributes: [],
-            required: true,
-          },
-          {
             model: Modelo,
             attributes: [],
             required: true,
+            include: [
+              {
+                model: Marca,
+                attributes: [],
+                required: true,
+              },
+            ],
           },
           {
             model: Cliente,
@@ -68,7 +70,7 @@ export const listarEquipoControlSocket = async () => {
   EquipoControl.belongsTo(EquipoSerie, { foreignKey: "EquipoSerie_id" });
   EquipoControl.belongsTo(Usuario, { foreignKey: "Usuario_id" });
   EquipoSerie.belongsTo(Equipo, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
 
@@ -77,7 +79,7 @@ export const listarEquipoControlSocket = async () => {
     attributes: [
       "IdEquipoControl",
       "EquipoSerie.Equipo.Cliente.CodCliente",
-      "EquipoSerie.Equipo.Marca.Marca",
+      "EquipoSerie.Equipo.Modelo.Marca.Marca",
       "EquipoSerie.Equipo.Modelo.Modelo",
       "Usuario.Usuario",
       "FcMovimiento",
@@ -101,14 +103,16 @@ export const listarEquipoControlSocket = async () => {
             required: true,
             include: [
               {
-                model: Marca,
-                attributes: [],
-                required: true,
-              },
-              {
                 model: Modelo,
                 attributes: [],
                 required: true,
+                include: [
+                  {
+                    model: Marca,
+                    attributes: [],
+                    required: true,
+                  },
+                ],
               },
               {
                 model: Cliente,
@@ -129,7 +133,7 @@ export const listarEquipoControlSocket = async () => {
 export const listarEquipoSerieSocket = async () => {
   EquipoSerie.belongsTo(Equipo, { foreignKey: "Equipo_id" });
   EquipoSerie.belongsTo(Usuario, { foreignKey: "Usuario_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
 
@@ -138,7 +142,7 @@ export const listarEquipoSerieSocket = async () => {
     attributes: [
       "IdEquipoSerie",
       "Equipo.Cliente.CodCliente",
-      "Equipo.Marca.Marca",
+      "Equipo.Modelo.Marca.Marca",
       "Equipo.Modelo.Modelo",
       "Usuario.Usuario",
       "Serie",
@@ -156,14 +160,16 @@ export const listarEquipoSerieSocket = async () => {
         required: true,
         include: [
           {
-            model: Marca,
-            attributes: [],
-            required: true,
-          },
-          {
             model: Modelo,
             attributes: [],
             required: true,
+            include: [
+              {
+                model: Marca,
+                attributes: [],
+                required: true,
+              },
+            ],
           },
           {
             model: Cliente,
@@ -312,13 +318,7 @@ const obtenerIdsEquipo = async () => {
   try {
     const equipos = await Equipo.findAll({
       raw: true,
-      attributes: [
-        "IdEquipo",
-        "Cliente_id",
-        "Marca_id",
-        "Modelo_id",
-        "Area_id",
-      ],
+      attributes: ["IdEquipo", "Cliente_id", "Modelo_id", "Area_id"],
     });
 
     console.log("snow", equipos);
@@ -326,7 +326,6 @@ const obtenerIdsEquipo = async () => {
     return equipos.map((equipo: any) => ({
       Cliente_id: equipo.Cliente_id,
       Area_id: equipo.Area_id,
-      Marca_id: equipo.Marca_id,
       Modelo_id: equipo.Modelo_id,
       IdEquipo: equipo.IdEquipo,
     }));
@@ -401,7 +400,7 @@ const obtenerIdsArea = async (areas: string[]) => {
 };
 
 export const listarEquipoxClasificacionSocket = async () => {
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
 
@@ -410,19 +409,21 @@ export const listarEquipoxClasificacionSocket = async () => {
     attributes: [
       "IdEquipo",
       "Cliente.CodCliente",
-      "Marca.Marca",
+      "Modelo.Marca.Marca",
       "Modelo.Modelo",
     ],
     include: [
       {
-        model: Marca,
-        attributes: [],
-        required: true,
-      },
-      {
         model: Modelo,
         attributes: [],
         required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+          },
+        ],
       },
       {
         model: Cliente,
