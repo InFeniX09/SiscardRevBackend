@@ -12,13 +12,10 @@ const Equipo = db[0].define(
     Cliente_id: {
       type: DataTypes.INTEGER,
     },
-    Marca_id: {
-      type: DataTypes.INTEGER,
-    },
     Modelo_id: {
       type: DataTypes.INTEGER,
     },
-    TipoEquipo_id: {
+    Area_id: {
       type: DataTypes.INTEGER,
     },
     Especificacion: {

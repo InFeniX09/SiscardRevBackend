@@ -33,11 +33,13 @@ import {
   listarClasificacionEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
+  listarEquipoXAreaXClienteXTipoEquipo,
   listarEquipoxClxTCSocket,
   listarMarcaSocket,
   listarMarcaXTipoEquipo,
   listarMarcaxTipoEquipo,
   listarModeloSocket,
+  listarModeloXMarca,
   listarTipoEquipoSocket,
   listarTipoEquipoxClSocket,
   recuperarClave,
@@ -215,12 +217,10 @@ class Sockets {
       });
       socket.on("crear-modelo", async (data, callback) => {
         const json = await crearModeloSocket(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("crear-equipo", async (data, callback) => {
         const json = await crearEquipoSocket(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("crear-equipodescuento", async (data, callback) => {
@@ -276,7 +276,16 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-
+      socket.on("listar-modeloxmarca", async (data, callback) => {
+        const json = await listarModeloXMarca(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-equipoxareaxclientextipoequipo", async (data, callback) => {
+        const json = await listarEquipoXAreaXClienteXTipoEquipo(data);
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("listar-equipoxclxtc", async (data, callback) => {
         const json = await listarEquipoxClxTCSocket(data);
         console.log("json", json);

@@ -261,22 +261,28 @@ export const crearModeloSocket = async (data: any) => {
     });
     return { msg: "NoExiste", data: Query3 };
   }
-
 };
 export const crearEquipoSocket = async (data: any) => {
-  console.log(data);
-  console.log(JSON.stringify(data));
-
-  const Query3 = await Equipo.create({
-    Cliente_id: data.Cliente,
-    Marca_id: data.Marca,
-    Modelo_id: data.Modelo,
-    TipoEquipo_id: data.TipoEquipo,
-    Especificacion: data.Especificacion,
-    Gamma: data.Gamma,
+  const Query0 = await Equipo.findOne({
+    where: {
+      Cliente_id: data.Cliente,
+      Modelo_id: data.Modelo,
+      Area_id: data.Area,
+    },
   });
+  if (Query0) {
+    return { msg: "Existe" };
+  } else {
+    const Query3 = await Equipo.create({
+      Cliente_id: data.Cliente,
+      Modelo_id: data.Modelo,
+      Area_id: data.Area,
+      Especificacion: data.Especificacion,
+      Gamma: data.Gamma,
+    });
 
-  return Query3;
+    return { msg: "NoExiste", data: Query3 };
+  }
 };
 export const crearEquipoDescuentoSocket = async (data: any) => {
   try {
@@ -581,8 +587,8 @@ export const listarModeloxMarca = async () => {
   return Query3;
 };
 
-export const listarMarcaXTipoEquipo = async (data:any) => {
-  console.log('yaris',data)
+export const listarMarcaXTipoEquipo = async (data: any) => {
+  console.log("yaris", data);
   Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
 
   const Query3 = await Marca.findAll({
@@ -599,12 +605,65 @@ export const listarMarcaXTipoEquipo = async (data:any) => {
         model: TipoEquipo,
         attributes: [],
         required: true,
-   
       },
     ],
     where: {
       Estado: "A",
       TipoEquipo_id: data.TipoEquipo,
+    },
+  });
+
+  return Query3;
+};
+
+export const listarModeloXMarca = async (data: any) => {
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
+
+  const Query3 = await Modelo.findAll({
+    raw: true,
+    attributes: ["IdModelo", "Modelo", "Estado"],
+    include: [
+      {
+        model: Marca,
+        attributes: [],
+        required: true,
+      },
+    ],
+    where: {
+      Estado: "A",
+      Marca_id: data.Marca,
+    },
+  });
+
+  return Query3;
+};
+export const listarEquipoXAreaXClienteXTipoEquipo = async (data: any) => {
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
+
+  const Query3 = await Equipo.findAll({
+    raw: true,
+    attributes: ["IdEquipo", "Modelo.Marca.Marca", "Modelo.Modelo", "Estado"],
+    include: [
+      {
+        model: Modelo,
+        attributes: [],
+        required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+            include: [{ model: TipoEquipo, attributes: [], required: true, where: { IdTipoEquipo: data.TipoEquipo } }],
+          },
+        ],
+      },
+    ],
+    where: {
+      Estado: "A",
+      Cliente_id: data.Cliente,
+      Area_id: data.Area,
     },
   });
 
