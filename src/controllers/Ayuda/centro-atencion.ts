@@ -57,11 +57,7 @@ export const listarSolicitud = async (data: any) => {
   Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
 
   const results = await Solicitud.findAll({
-    attributes: [
-      "IdSolicitud",
-      "FcCreacion",
-      "Estado",
-    ],
+    attributes: ["IdSolicitud", "FcCreacion", "Estado"],
     include: [
       {
         model: TipoSolicitud,
@@ -89,7 +85,7 @@ export const listarSolicitud = async (data: any) => {
     },
   });
 
-  const Query3 = results.map(result => {
+  const Query3 = results.map((result) => {
     const plainResult = result.get({ plain: true });
     return {
       ...plainResult,
@@ -104,19 +100,25 @@ export const listarSolicitud = async (data: any) => {
 };
 //Listo
 export const crearSolicitudSocket = async (data: any) => {
-  let pTipoSolicitud_id = data.TipoSolicitud_id
-    ? parseInt(data.TipoSolicitud_id)
-    : null;
-  let pTipoMotivo_id = data.TipoMotivo_id ? parseInt(data.TipoMotivo_id) : null;
-  let pUsuario_id = data.Usuario_id ? parseInt(data.Usuario_id) : null;
-
-  const Query3 = await Solicitud.create({
-    TipoSolicitud_id: pTipoSolicitud_id,
-    TipoMotivo_id: pTipoMotivo_id,
-    Usuario_id: pUsuario_id,
+  const Query0 = await Solicitud.findOne({
+    where: {
+      TipoSolicitud_id: data.TipoSolicitud_id,
+      TipoMotivo_id: data.TipoMotivo_id,
+      Usuario_id: data.Usuario_id,
+    },
   });
+  if (Query0) {
+    return { msg: "Existe" };
+  } else {
+    const Query3 = await Solicitud.create({
+      TipoSolicitud_id: data.TipoSolicitud_id,
+      TipoMotivo_id: data.TipoMotivo_id,
+      Usuario_id: data.Usuario_id,
+    });
+    return { msg: "NoExiste", data: Query3 };
+  }
 
-  return Query3;
+ 
 };
 
 export const listarTicketSocket = async (data: any) => {
@@ -634,8 +636,8 @@ export const listarArea = async () => {
 };
 
 export const listarPuesto = async (data: any) => {
-  console.log('2',data);
-  console.log('2',JSON.stringify(data));
+  console.log("2", data);
+  console.log("2", JSON.stringify(data));
 
   const Query3 = await Puesto.findAll({
     raw: true,

@@ -9,6 +9,7 @@ import EquipoSerie from "../../models/equiposerie";
 import moment from "moment-timezone";
 import Estado from "../../models/estado";
 import Area from "../../models/area";
+import TipoEquipo from "../../models/tipoequipo";
 
 export const listarEquipoStockSocket = async () => {
   EquipoStock.belongsTo(Usuario, { foreignKey: "Usuario_id" });
@@ -81,6 +82,7 @@ export const listarEquipoControlSocket = async () => {
       "EquipoSerie.Equipo.Cliente.CodCliente",
       "EquipoSerie.Equipo.Modelo.Marca.Marca",
       "EquipoSerie.Equipo.Modelo.Modelo",
+      "EquipoSerie.Serie",
       "Usuario.Usuario",
       "FcMovimiento",
       "Observacion",
@@ -400,6 +402,7 @@ const obtenerIdsArea = async (areas: string[]) => {
 };
 
 export const listarEquipoxClasificacionSocket = async () => {
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
   Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
@@ -422,6 +425,7 @@ export const listarEquipoxClasificacionSocket = async () => {
             model: Marca,
             attributes: [],
             required: true,
+            include: [{ model: TipoEquipo, attributes: [], required: true }],
           },
         ],
       },

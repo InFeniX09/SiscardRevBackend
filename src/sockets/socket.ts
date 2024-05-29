@@ -133,39 +133,33 @@ class Sockets {
         callback(json);
       });
       socket.on("listar-misolicitud", async (data, callback) => {
-        console.log("quesada", data);
         const json = await listarSolicitud(data);
-        console.log("natael", json);
         callback(json);
       });
       socket.on("listar-miticket", async (data, callback) => {
-        console.log(data);
         const json = await listarTicketSocket(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("listar-solicitud", async (data, callback) => {
         const json = await listarSolicitud(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("listar-ticket", async (data, callback) => {
-        console.log(data);
         const json = await listarTicketSocket(data);
-        console.log("json", json);
         callback(json);
       });
       socket.on("crear-solicitud", async (data, callback) => {
-        try {
-          const crear = await crearSolicitudSocket(data);
-          callback("si");
-        } catch {
-          callback("no");
-        }
+        const json = await crearSolicitudSocket(data);
+        callback(json);
       });
       //-------------------------
       //AUTH
       //-------------------------
+      socket.on("enviarcorreo", async (data, callback) => {
+        const json = await enviarCorreoSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
       socket.on("enviarcorreo", async (data, callback) => {
         const json = await enviarCorreoSocket(data);
         console.log("json", json);
@@ -219,7 +213,6 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-
       socket.on("crear-tipoequipo", async (data, callback) => {
         const json = await crearTipoEquipoSocket(data);
         callback(json);
