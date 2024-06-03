@@ -16,6 +16,7 @@ import {
   listarEquipoxClxTexUsuSocket,
   listarPuesto,
   listarSolicitud,
+  listarSolicitudXId,
   listarTicketSocket,
   listarTipoDocumento,
   listarTipoMotivoSocket,
@@ -108,6 +109,11 @@ class Sockets {
       //-------------------------
       //Centro Atencion
       //-------------------------
+      socket.on("listar-solicitudxid", async (data, callback) => {
+        const json = await listarSolicitudXId(data);
+        console.log(json)
+        callback(json);
+      });
       socket.on("armarpdf-solicitud", async (data, callback) => {
         const json = await armarPdfSolicitudSocket(data);
         callback(json);

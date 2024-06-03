@@ -22,6 +22,7 @@ import EquipoDescuento from "../../models/equipodescuento";
 import Area from "../../models/area";
 import TipoDocumento from "../../models/tipodocumento";
 import Puesto from "../../models/puesto";
+import { include } from "underscore";
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
@@ -117,8 +118,6 @@ export const crearSolicitudSocket = async (data: any) => {
     });
     return { msg: "NoExiste", data: Query3 };
   }
-
- 
 };
 
 export const listarTicketSocket = async (data: any) => {
@@ -163,17 +162,17 @@ export const crearTicketSocket = async (data: any) => {
 export const listarEquipoxClxTexUsuSocket = async (data: any) => {
   Equipo.hasMany(EquipoStock, { foreignKey: "Equipo_id" });
   Equipo.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
-  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
 
   const Query3 = await Equipo.findAll({
     raw: true,
     attributes: [
       "IdEquipo",
       "Cliente.CodCliente",
-      "Marca.Marca",
+      "Modelo.Marca.Marca",
       "Modelo.Modelo",
       "EquipoSeries.Serie",
       "EquipoSeries.IdEquipoSerie",
@@ -193,23 +192,27 @@ export const listarEquipoxClxTexUsuSocket = async (data: any) => {
         required: true,
       },
       {
-        model: TipoEquipo,
-        required: true,
-        attributes: [],
-        where: {
-          Clasificacion: "Seriado",
-          TipoEquipo: data.TipoEquipo,
-        },
-      },
-      {
-        model: Marca,
-        attributes: [],
-        required: true,
-      },
-      {
         model: Modelo,
         attributes: [],
         required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+            include: [
+              {
+                model: TipoEquipo,
+                attributes: [],
+                required: true,
+                where: {
+                  Clasificacion: "Seriado",
+                  TipoEquipo: data.TipoEquipo,
+                },
+              },
+            ],
+          },
+        ],
       },
       {
         model: Cliente,
@@ -225,9 +228,9 @@ export const listarEquipoxClxTexUsuSocket = async (data: any) => {
 
 export const listarAccesorioxClxTexUsuSocket = async () => {
   Equipo.hasMany(EquipoStock, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
   Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
 
   const Query3 = await Equipo.findAll({
@@ -235,7 +238,7 @@ export const listarAccesorioxClxTexUsuSocket = async () => {
     attributes: [
       "IdEquipo",
       "Cliente.CodCliente",
-      "Marca.Marca",
+      "Modelo.Marca.Marca",
       "Modelo.Modelo",
     ],
     include: [
@@ -247,23 +250,28 @@ export const listarAccesorioxClxTexUsuSocket = async () => {
           Usuario_id: 5,
         },
       },
-      {
-        model: TipoEquipo,
-        required: true,
-        attributes: [],
-        where: {
-          Clasificacion: "Accesorio",
-        },
-      },
-      {
-        model: Marca,
-        attributes: [],
-        required: true,
-      },
+
       {
         model: Modelo,
         attributes: [],
         required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+            include: [
+              {
+                model: TipoEquipo,
+                attributes: [],
+                required: true,
+                where: {
+                  Clasificacion: "Accesorio",
+                },
+              },
+            ],
+          },
+        ],
       },
       {
         model: Cliente,
@@ -278,30 +286,24 @@ export const listarAccesorioxClxTexUsuSocket = async () => {
 };
 
 export const armarPdfSolicitudSocket = async (data: any) => {
-  console.log("mbaka", data);
-  console.log("papitarota");
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
-  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
   const ids = data.dato.Accesorio.split(",").map(Number) || "";
   const Query3 = await Equipo.findAll({
     raw: true,
     attributes: [
       "IdEquipo",
       "Cliente.CodCliente",
-      "Marca.Marca",
+      "Modelo.Marca.Marca",
       "Modelo.Modelo",
     ],
     include: [
       {
-        model: Marca,
-        attributes: [],
-        required: true,
-      },
-      {
         model: Modelo,
         attributes: [],
         required: true,
+        include: [{ model: Marca, attributes: [], required: true }],
       },
       {
         model: Cliente,
@@ -324,21 +326,21 @@ export const armarPdfSolicitudSocket = async (data: any) => {
     .map(Number);
 
   Equipo.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
-  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
-  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
 
   const Query0: any = await Equipo.findAll({
     raw: true,
     attributes: [
       "IdEquipo",
       "Cliente.CodCliente",
-      "Marca.Marca",
+      "Modelo.Marca.Marca",
       "Modelo.Modelo",
       "EquipoSeries.Serie",
       "EquipoSeries.Identificador",
-      "TipoEquipo.TipoEquipo",
+      "Modelo.Marca.TipoEquipo.TipoEquipo",
       "EquipoSeries.TiempoVida",
       "EquipoSeries.Observacion",
     ],
@@ -353,23 +355,22 @@ export const armarPdfSolicitudSocket = async (data: any) => {
           },
         },
       },
-      {
-        model: Marca,
-        attributes: [],
-        required: true,
-      },
+
       {
         model: Modelo,
         attributes: [],
         required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+            include: [{ model: TipoEquipo, attributes: [], required: true }],
+          },
+        ],
       },
       {
         model: Cliente,
-        attributes: [],
-        required: true,
-      },
-      {
-        model: TipoEquipo,
         attributes: [],
         required: true,
       },
@@ -377,21 +378,21 @@ export const armarPdfSolicitudSocket = async (data: any) => {
   });
 
   const equipoIdsQuery0 = Query0.map((equipo: any) => equipo.IdEquipo);
-
   Equipo.hasMany(EquipoDescuento, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(Marca, { foreignKey: "Marca_id" });
-  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Equipo.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
   Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
-  Equipo.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
+  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
+  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
+  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
 
   const Query1 = await Equipo.findAll({
     raw: true,
     attributes: [
       "IdEquipo",
       "Cliente.CodCliente",
-      "Marca.Marca",
+      "Modelo.Marca.Marca",
       "Modelo.Modelo",
-      "TipoEquipo.TipoEquipo",
+      "Modelo.Marca.TipoEquipo.TipoEquipo",
       "EquipoDescuentos.Tiempo",
       "EquipoDescuentos.Precio",
     ],
@@ -402,7 +403,7 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         required: true,
       },
       {
-        model: Marca,
+        model: Cliente,
         attributes: [],
         required: true,
       },
@@ -410,16 +411,14 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         model: Modelo,
         attributes: [],
         required: true,
-      },
-      {
-        model: Cliente,
-        attributes: [],
-        required: true,
-      },
-      {
-        model: TipoEquipo,
-        attributes: [],
-        required: true,
+        include: [
+          {
+            model: Marca,
+            attributes: [],
+            required: true,
+            include: [{ model: TipoEquipo, attributes: [], required: true }],
+          },
+        ],
       },
     ],
     where: {
@@ -460,7 +459,7 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         attributes: [],
         required: true,
         where: {
-          IdUsuario: data.datousuario,
+          IdUsuario: data.usuario_id,
         },
       },
       {
@@ -617,10 +616,8 @@ export const listarTipoDocumento = async () => {
   const Query3 = await TipoDocumento.findAll({
     raw: true,
     attributes: ["IdTipoDocumento", "TipoDocumento", "Agrupacion", "Estado"],
-
     where: {},
   });
-
   return Query3;
 };
 
@@ -628,22 +625,41 @@ export const listarArea = async () => {
   const Query3 = await Area.findAll({
     raw: true,
     attributes: ["IdArea", "Area", "Estado"],
-
     where: {},
   });
-
   return Query3;
 };
 
 export const listarPuesto = async (data: any) => {
-  console.log("2", data);
-  console.log("2", JSON.stringify(data));
-
   const Query3 = await Puesto.findAll({
     raw: true,
     attributes: ["IdPuesto", "Puesto", "Estado"],
     where: { Area_id: data.Area },
   });
+  return Query3;
+};
 
+export const listarSolicitudXId = async (data: any) => {
+  Solicitud.belongsTo(TipoMotivo, { foreignKey: "TipoMotivo_id" });
+  Solicitud.belongsTo(TipoSolicitud, { foreignKey: "TipoSolicitud_id" });
+  Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
+  const Query3 = await Solicitud.findAll({
+    raw: true,
+    attributes: [
+      "TipoSolicitud.IdTipoSolicitud",
+      "TipoMotivo.IdTipoMotivo",
+      "TipoSolicitud.TipoSolicitud",
+      "TipoMotivo.TipoMotivo",
+      "Usuario.Usuario",
+      "FcCreacion",
+      "Estado",
+    ],
+    include: [
+      { model: TipoSolicitud, attributes: [], required: true },
+      { model: TipoMotivo, attributes: [], required: true },
+      { model: Usuario, attributes: [], required: true },
+    ],
+    where: { IdSolicitud: data.IdSolicitud },
+  });
   return Query3;
 };
