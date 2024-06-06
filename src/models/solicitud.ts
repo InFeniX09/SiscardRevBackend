@@ -21,7 +21,7 @@ const Solicitud = db[0].define(
     FcCreacion: {
       type: DataTypes.TIME,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

@@ -42,7 +42,7 @@ export const listarMarca = async (req = request, res = response) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -114,7 +114,7 @@ export const listarModelo = async (req = request, res = response) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -145,14 +145,14 @@ export const listarTipoEquipo = async (req = request, res = response) => {
 
   const Query3 = await TipoEquipo.findAll({
     raw: true,
-    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
+    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado_id"],
     where: {
       Clasificacion: {
         [Op.like]: pClasificacion
           ? Sequelize.literal(`ISNULL('${pClasificacion}', '%')`)
           : "%",
       },
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -194,10 +194,10 @@ export const listarEquipo = async (req = request, res = response) => {
       "Marca.Marca",
       "Modelo.Modelo",
       "Especificacion",
-      "Estado",
+      "Estado_id",
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
     include: [
       {
@@ -379,7 +379,7 @@ export const listarEquipoControl = async (req = request, res = response) => {
       "Usuario.Usuario",
       "FcAsignado",
       "FcBaja",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -462,7 +462,7 @@ export const listarEquipoDescuento = async (req = request, res = response) => {
       "Equipo.Modelo.Modelo",
       "Precio",
       "Tiempo",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -492,7 +492,7 @@ export const listarEquipoDescuento = async (req = request, res = response) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 

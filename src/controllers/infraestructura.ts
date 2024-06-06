@@ -21,9 +21,9 @@ import Puesto from "../models/puesto";
 export const listarcliente = async (req = request, res = response) => {
   const Query3 = await Cliente.findAll({
     raw: true,
-    attributes: ["IdCliente", "Cliente", "Cliente.Estado"],
+    attributes: ["IdCliente", "Cliente", "Cliente.Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -55,7 +55,7 @@ export const listarproveedor = async (req = request, res = response) => {
     raw: true,
     attributes: ["IdProveedor", "Proveedor", "Proveedor.Estado"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -85,9 +85,9 @@ export const listarproveedor = async (req = request, res = response) => {
 export const listarcolor = async (req = request, res = response) => {
   const Query3 = await Color.findAll({
     raw: true,
-    attributes: ["IdColor", "Color", "Codigo", "Estado"],
+    attributes: ["IdColor", "Color", "Codigo", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -124,10 +124,10 @@ export const listarusuario = async (req = request, res = response) => {
       "Telefono",
       "FcIngreso",
       "FcBaja",
-      "Estado",
+      "Estado_id",
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -172,7 +172,7 @@ export const listarpersona = async (req = request, res = response) => {
       "Telefono",
       "Area.Area",
       "Puesto.Puesto",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -192,7 +192,7 @@ export const listarpersona = async (req = request, res = response) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -233,7 +233,7 @@ export const listarmenu = async (req = request, res = response) => {
       "Comando",
       "TipoMenu.TipoMenu",
       "idPadre",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -243,7 +243,7 @@ export const listarmenu = async (req = request, res = response) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       idTipoMenu: {
         [Op.like]: pidTipoMenu
           ? Sequelize.literal(`ISNULL('${pidTipoMenu}', '%')`)
@@ -282,9 +282,9 @@ export const listarmenu = async (req = request, res = response) => {
 
 export const listartipomenu = async (req = request, res = response) => {
   const Query3 = await TipoMenu.findAll({
-    attributes: ["IdTipoMenu", "TipoMenu", "Estado"],
+    attributes: ["IdTipoMenu", "TipoMenu", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -366,7 +366,7 @@ export const crearequipocontrol = async (req = request, res = response) => {
     idProveedor: Proveedor,
     FcIngreso: FcIngreso,
     Observacion: Observacion,
-    Estado: Estado,
+    Estado_id: Estado,
   });
 
   if (Query3) {

@@ -12,7 +12,7 @@ const Proveedor = db[0].define(
     Proveedor: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

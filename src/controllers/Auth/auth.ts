@@ -28,7 +28,7 @@ export const buscarUsuario = async (req = request, res = response) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Usuario: pUsuario,
     },
   });
@@ -69,7 +69,7 @@ export const listarUsuario = async (req = request, res = response) => {
       "FcBaja",
       "RutaImagen",
       "Entidad_id",
-      "Estado",
+      "Estado_id",
     ],
   });
 
@@ -116,7 +116,7 @@ export const listarEntidad = async (req = request, res = response) => {
       "TipoEntidad_id",
       "FcIngreso",
       "FcBaja",
-      "Estado"
+      "Estado_id"
     ],
   });
 

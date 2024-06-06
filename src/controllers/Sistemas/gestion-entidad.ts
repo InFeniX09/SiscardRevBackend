@@ -7,9 +7,9 @@ import Usuario from "../../models/usuario";
 export const listarClienteSocket = async () => {
   const Query3 = await Cliente.findAll({
     raw: true,
-    attributes: ["IdCliente", "CodCliente", "DescripcionCliente", "Estado"],
+    attributes: ["IdCliente", "CodCliente", "DescripcionCliente", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 

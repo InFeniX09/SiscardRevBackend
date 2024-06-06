@@ -15,7 +15,7 @@ const Cliente = db[0].define(
     DescripcionCliente: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

@@ -21,7 +21,7 @@ const EquipoControl = db[0].define(
     Observacion: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     }
   },

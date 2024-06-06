@@ -16,7 +16,7 @@ const TipoEquipo = db[0].define(
     Clasificacion: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

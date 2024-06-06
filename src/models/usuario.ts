@@ -39,7 +39,7 @@ const Usuario = db[0].define(
     Online: {
       type: DataTypes.BOOLEAN,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

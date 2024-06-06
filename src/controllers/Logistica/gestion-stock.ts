@@ -7,9 +7,9 @@ import Cliente from "../../models/cliente";
 import EquipoControl from "../../models/equipocontrol";
 import EquipoSerie from "../../models/equiposerie";
 import moment from "moment-timezone";
-import Estado from "../../models/estado";
 import Area from "../../models/area";
 import TipoEquipo from "../../models/tipoequipo";
+import Estado from "../../models/estado";
 
 export const listarEquipoStockSocket = async () => {
   EquipoStock.belongsTo(Usuario, { foreignKey: "Usuario_id" });
@@ -66,6 +66,31 @@ export const listarEquipoStockSocket = async () => {
 
   return Query3;
 };
+export const listarEquipoSerieXIdEquipoStock = async (data: any) => {
+  EquipoSerie.belongsTo(EquipoStock, { foreignKey: "Equipo_id" });
+  EquipoStock.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
+  EquipoSerie.belongsTo(Estado, { foreignKey: "Estado_id" });
+
+  const Query3 = await EquipoSerie.findAll({
+    raw: true,
+    attributes: ["IdEquipoSerie","Serie"],
+    include: [
+      {
+        model: EquipoStock,
+        attributes: [],
+        required: true,
+        where: { IdEquipoStock: data.IdEquipoStock },
+      },
+      {
+        model: Estado,
+        attributes: [],
+        required: true,
+      },
+    ],
+  });
+
+  return Query3;
+};
 
 export const listarEquipoControlSocket = async () => {
   EquipoControl.belongsTo(EquipoSerie, { foreignKey: "EquipoSerie_id" });
@@ -86,7 +111,7 @@ export const listarEquipoControlSocket = async () => {
       "Usuario.Usuario",
       "FcMovimiento",
       "Observacion",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -148,7 +173,7 @@ export const listarEquipoSerieSocket = async () => {
       "Equipo.Modelo.Modelo",
       "Usuario.Usuario",
       "Serie",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -201,7 +226,7 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
     ];
     const areasUnicas: any[] = [...new Set(data.map((item: any) => item.Area))];
     const estadosUnicos: any[] = [
-      ...new Set(data.map((item: any) => item.Estado)),
+      ...new Set(data.map((item: any) => item.LargoEstado)),
     ];
     // Obtiene los IDs de Marca y Modelo
     const [clientes, marcas, modelos, areas, estados] = await Promise.all([
@@ -223,17 +248,18 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
     );
     const areaMap = new Map(areas.map((area: any) => [area.Area, area.IdArea]));
     const estadoMap = new Map(
-      estados.map((estado: any) => [estado.Estado, estado.IdEstado])
+      estados.map((estado: any) => [estado.LargoEstado, estado.IdEstado])
     );
     // Obtiene los IDs de los equipos
     const equipos = await obtenerIdsEquipo();
     // Crea un mapa para facilitar la búsqueda
     const equipoMap = new Map(
       equipos.map((equipo: any) => [
-        `${equipo.Cliente_id}-${equipo.Marca_id}-${equipo.Modelo_id}-${equipo.Area_id}`,
+        `${equipo.Cliente_id}-${equipo.Modelo_id}-${equipo.Area_id}`,
         equipo.IdEquipo,
       ])
     );
+    console.log('exe',equipoMap)
     // Recorre los datos y crea el nuevo JSON
     const equiposSerieJSON = data.map((item: any) => {
       const today =
@@ -242,17 +268,17 @@ export const cargaMasivaEquipoSocket = async (data: any) => {
       const marcaId = marcaMap.get(item.Marca);
       const modeloId = modeloMap.get(item.Modelo);
       const areaId = areaMap.get(item.Area);
-      const estados = estadoMap.get(item.Estado);
+      const estados = estadoMap.get(item.LargoEstado);
       const equipoId = equipoMap.get(
-        `${clienteId}-${marcaId}-${modeloId}-${areaId}`
+        `${clienteId}-${modeloId}-${areaId}`
       );
       return {
         Equipo_id: equipoId,
+        Usuario_id: 5,
         Serie: item.Serie,
         Identificador: item.Identificador,
-        Usuario_id: 5,
         FcIngreso: today,
-        Estado: estados,
+        Estado_id: estados,
       };
     });
     //Final (Ingreso SERIES)
@@ -377,10 +403,10 @@ const obtenerIdsModelo = async (modelos: string[]) => {
 const obtenerEstados = async (estados: string[]) => {
   try {
     const estadosEnDB = await Estado.findAll({
-      where: { Agrupamiento: "Equipo", Estado: estados },
+      where: { Agrupamiento: "Equipo", LargoEstado: estados },
     });
     return estadosEnDB.map((estado: any) => ({
-      Estado: estado.Estado,
+      LargoEstado: estado.LargoEstado,
       IdEstado: estado.IdEstado,
     }));
   } catch (error) {

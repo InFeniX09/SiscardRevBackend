@@ -131,7 +131,7 @@ export const listarClasificacionEquipoSocket = async () => {
       [Sequelize.literal("DISTINCT TipoEquipo.Clasificacion"), "Clasificacion"],
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
   return Query3;
@@ -139,9 +139,9 @@ export const listarClasificacionEquipoSocket = async () => {
 export const listarTipoEquipoSocket = async () => {
   const Query3 = await TipoEquipo.findAll({
     raw: true,
-    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
+    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
   return Query3;
@@ -149,9 +149,9 @@ export const listarTipoEquipoSocket = async () => {
 export const listarTipoEquipoxClSocket = async (data: any) => {
   const Query3 = await TipoEquipo.findAll({
     raw: true,
-    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado"],
+    attributes: ["IdTipoEquipo", "TipoEquipo", "Clasificacion", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Clasificacion: data.Clasificacion,
     },
   });
@@ -166,7 +166,7 @@ export const listarMarcaSocket = async () => {
       "TipoEquipo.Clasificacion",
       "TipoEquipo.TipoEquipo",
       "Marca",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -176,7 +176,7 @@ export const listarMarcaSocket = async () => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
   return Query3;
@@ -191,7 +191,7 @@ export const listarModeloSocket = async () => {
       "Marca.TipoEquipo.TipoEquipo",
       "Marca.Marca",
       "Modelo",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -202,7 +202,7 @@ export const listarModeloSocket = async () => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
   return Query3;
@@ -383,7 +383,7 @@ export const listarEquipoSocket = async () => {
       "Cliente.CodCliente",
       "Especificacion",
       "Gamma",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -406,7 +406,7 @@ export const listarEquipoSocket = async () => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -427,7 +427,7 @@ export const listarEquipoxClxTCSocket = async (data: any) => {
       "Cliente.CodCliente",
       "Especificacion",
       "Gamma",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -457,7 +457,7 @@ export const listarEquipoxClxTCSocket = async (data: any) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Cliente_id: data.Cliente,
     },
   });
@@ -481,7 +481,7 @@ export const listarEquipoDescuentoSocket = async () => {
       "Equipo.Cliente.CodCliente",
       "Tiempo",
       "Precio",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -513,7 +513,7 @@ export const listarEquipoDescuentoSocket = async () => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -558,7 +558,7 @@ export const listarMarcaxTipoEquipo = async () => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Cliente_id: "1",
     },
   });
@@ -587,7 +587,7 @@ export const listarModeloxMarca = async () => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -604,7 +604,7 @@ export const listarMarcaXTipoEquipo = async (data: any) => {
       "TipoEquipo.Clasificacion",
       "TipoEquipo.TipoEquipo",
       "Marca",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -614,7 +614,7 @@ export const listarMarcaXTipoEquipo = async (data: any) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       TipoEquipo_id: data.TipoEquipo,
     },
   });
@@ -627,7 +627,7 @@ export const listarModeloXMarca = async (data: any) => {
 
   const Query3 = await Modelo.findAll({
     raw: true,
-    attributes: ["IdModelo", "Modelo", "Estado"],
+    attributes: ["IdModelo", "Modelo", "Estado_id"],
     include: [
       {
         model: Marca,
@@ -636,7 +636,7 @@ export const listarModeloXMarca = async (data: any) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Marca_id: data.Marca,
     },
   });
@@ -650,7 +650,7 @@ export const listarEquipoXAreaXClienteXTipoEquipo = async (data: any) => {
 
   const Query3 = await Equipo.findAll({
     raw: true,
-    attributes: ["IdEquipo", "Modelo.Marca.Marca", "Modelo.Modelo", "Estado"],
+    attributes: ["IdEquipo", "Modelo.Marca.Marca", "Modelo.Modelo", "Estado_id"],
     include: [
       {
         model: Modelo,
@@ -674,7 +674,7 @@ export const listarEquipoXAreaXClienteXTipoEquipo = async (data: any) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Cliente_id: data.Cliente,
       Area_id: data.Area,
     },

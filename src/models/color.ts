@@ -15,7 +15,7 @@ const Color = db[0].define(
     Codigo: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

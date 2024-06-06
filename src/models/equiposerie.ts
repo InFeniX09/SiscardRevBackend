@@ -24,7 +24,7 @@ const EquipoSerie = db[0].define(
     FcIngreso: {
       type: DataTypes.DATE,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

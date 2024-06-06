@@ -26,7 +26,7 @@ const Menu = db[0].define(
     Padre_id: {
       type: DataTypes.INTEGER,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

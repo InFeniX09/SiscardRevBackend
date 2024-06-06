@@ -18,7 +18,7 @@ const Reporte = db[0].define(
     TipoReporte: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

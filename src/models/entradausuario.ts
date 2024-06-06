@@ -21,7 +21,7 @@ const EntradaUsuario = db[0].define(
     UsuarioSalida: {
       type: DataTypes.DATE,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

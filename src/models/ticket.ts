@@ -36,7 +36,7 @@ const Ticket = db[0].define(
     idPrioridad: {
       type: DataTypes.INTEGER,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

@@ -15,7 +15,7 @@ export const listarTicket = async (req = request, res = response) => {
       "idUsuario",
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },   
   });
 

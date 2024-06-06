@@ -26,9 +26,9 @@ import { include } from "underscore";
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
-    attributes: ["IdTipoSolicitud", "TipoSolicitud", "Estado"],
+    attributes: ["IdTipoSolicitud", "TipoSolicitud", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
 
@@ -40,9 +40,9 @@ export const listarTipoMotivoSocket = async (data: any) => {
 
   const Query3 = await TipoMotivo.findAll({
     raw: true,
-    attributes: ["IdTipoMotivo", "TipoMotivo", "TipoSolicitud_id", "Estado"],
+    attributes: ["IdTipoMotivo", "TipoMotivo", "TipoSolicitud_id", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       TipoSolicitud_id: pTipoSolicitud_id,
     },
   });
@@ -58,7 +58,7 @@ export const listarSolicitud = async (data: any) => {
   Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
 
   const results = await Solicitud.findAll({
-    attributes: ["IdSolicitud", "FcCreacion", "Estado"],
+    attributes: ["IdSolicitud", "FcCreacion", "Estado_id"],
     include: [
       {
         model: TipoSolicitud,
@@ -77,7 +77,7 @@ export const listarSolicitud = async (data: any) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Usuario_id: {
         [Op.like]: pUsuario_id
           ? Sequelize.literal(`ISNULL('${pUsuario_id}', '%')`)
@@ -127,7 +127,7 @@ export const listarTicketSocket = async (data: any) => {
     raw: true,
     attributes: ["IdTicket", "Asunto", "Descripcion", "Usuario_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       Usuario_id: {
         [Op.like]: pUsuario_id
           ? Sequelize.literal(`ISNULL('${pUsuario_id}', '%')`)
@@ -615,7 +615,7 @@ export const armarPdfSolicitudSocket = async (data: any) => {
 export const listarTipoDocumento = async () => {
   const Query3 = await TipoDocumento.findAll({
     raw: true,
-    attributes: ["IdTipoDocumento", "TipoDocumento", "Agrupacion", "Estado"],
+    attributes: ["IdTipoDocumento", "TipoDocumento", "Agrupacion", "Estado_id"],
     where: {},
   });
   return Query3;
@@ -624,7 +624,7 @@ export const listarTipoDocumento = async () => {
 export const listarArea = async () => {
   const Query3 = await Area.findAll({
     raw: true,
-    attributes: ["IdArea", "Area", "Estado"],
+    attributes: ["IdArea", "Area", "Estado_id"],
     where: {},
   });
   return Query3;
@@ -633,7 +633,7 @@ export const listarArea = async () => {
 export const listarPuesto = async (data: any) => {
   const Query3 = await Puesto.findAll({
     raw: true,
-    attributes: ["IdPuesto", "Puesto", "Estado"],
+    attributes: ["IdPuesto", "Puesto", "Estado_id"],
     where: { Area_id: data.Area },
   });
   return Query3;
@@ -652,7 +652,7 @@ export const listarSolicitudXId = async (data: any) => {
       "TipoMotivo.TipoMotivo",
       "Usuario.Usuario",
       "FcCreacion",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       { model: TipoSolicitud, attributes: [], required: true },

@@ -15,7 +15,7 @@ const TipoMotivo = db[0].define(
     TipoSolicitud_id: {
       type: DataTypes.INTEGER,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

@@ -15,7 +15,7 @@ const Puesto = db[0].define(
     Area_id: {
       type: DataTypes.NUMBER,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

@@ -24,7 +24,7 @@ const Equipo = db[0].define(
     Gamma: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

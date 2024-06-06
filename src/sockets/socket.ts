@@ -50,6 +50,7 @@ import {
   cargaMasivaEquipoSocket,
   listarEquipoControlSocket,
   listarEquipoSerieSocket,
+  listarEquipoSerieXIdEquipoStock,
   listarEquipoStockSocket,
   listarEquipoxClasificacionSocket,
 } from "../controllers/Logistica/gestion-stock";
@@ -250,7 +251,10 @@ class Sockets {
       //-------------------------
       socket.on("listar-equipostock", async (data, callback) => {
         const json = await listarEquipoStockSocket();
-        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-equiposeriexidequipostock", async (data, callback) => {
+        const json = await listarEquipoSerieXIdEquipoStock(data);
         callback(json);
       });
       socket.on("listar-equipocontrol", async (data, callback) => {

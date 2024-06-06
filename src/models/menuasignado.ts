@@ -17,7 +17,7 @@ const MenuAsignado = db[0].define(
     Perfil_id: {
       type: DataTypes.INTEGER,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

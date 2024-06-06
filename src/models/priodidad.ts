@@ -13,7 +13,7 @@ const Prioridad = db[0].define(
     Prioridad: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

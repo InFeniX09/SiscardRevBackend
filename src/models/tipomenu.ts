@@ -13,7 +13,7 @@ const TipoMenu = db[0].define(
     TipoMenu: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     }
   },

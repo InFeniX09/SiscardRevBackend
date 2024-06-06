@@ -16,12 +16,12 @@ export const listarMenu= async (req = request, res = response) => {
       "Comando",
       "idTipoMenu",
       "idPadre",
-      "Estado",
+      "Estado_id",
       "UltimaFechMod",
       "UltimoUserMod",
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },   
   });
 
@@ -70,7 +70,7 @@ export const listarMenuxUsuarioxPerfil = async (req: Request, res: Response) => 
             Comando:result.Comando,
             idTipoMenu:result.idTipoMenu,
             idPadre:result.idPadre,
-            Estado:result.Estado,
+            Estado_id:result.Estado,
             UltimaFechMod:result.UltimaFechMod,
             UltimoUserMod:result.UltimoUserMod,
         }));

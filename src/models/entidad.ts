@@ -54,7 +54,7 @@ const Entidad = db[0].define(
     FcBaja: {
       type: DataTypes.DATE,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

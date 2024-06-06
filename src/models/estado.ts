@@ -9,7 +9,7 @@ const Estado = db[0].define(
       primaryKey: true,
       autoIncrement: true,
     },
-    Estado: {
+    LargoEstado: {
       type: DataTypes.STRING,
     },
     CortoEstado: {

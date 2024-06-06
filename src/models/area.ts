@@ -11,7 +11,7 @@ const Area = db[0].define(
     Area: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
   },

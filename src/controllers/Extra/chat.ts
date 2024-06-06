@@ -22,10 +22,10 @@ export const listarchatSocket = async (data: any) => {
       "ParaUsuario_id",
       "Mensaje",
       "FechaCreacion",
-      "Estado",
+      "Estado_id",
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
       [Op.or]: [
         {
           DeUsuario_id: pDeUsuario_id,
@@ -79,7 +79,7 @@ export const listarUsuarioSocket = async (data: any) => {
       "RutaImagen",
       "Entidad_id",
       "Online",
-      "Estado",
+      "Estado_id",
     ],
     include: [
       {
@@ -96,7 +96,7 @@ export const listarUsuarioSocket = async (data: any) => {
       },
     ],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
   return Query3;
@@ -105,9 +105,9 @@ export const listarUsuarioSocket = async (data: any) => {
 export const listarReporte = async () => {
   const Query3 = await Reporte.findAll({
     raw: true,
-    attributes: ["IdReporte", "Reporte", "Query", "TipoReporte", "Estado"],
+    attributes: ["IdReporte", "Reporte", "Query", "TipoReporte", "Estado_id"],
     where: {
-      Estado: "A",
+      Estado_id: "1",
     },
   });
   return Query3;

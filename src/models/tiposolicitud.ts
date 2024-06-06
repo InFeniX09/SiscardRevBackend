@@ -12,7 +12,7 @@ const TipoSolicitud = db[0].define(
     TipoSolicitud: {
       type: DataTypes.STRING,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {

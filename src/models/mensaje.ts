@@ -21,7 +21,7 @@ const Mensaje = db[0].define(
     FechaCreacion: {
       type: DataTypes.DATE,
     },
-    Estado: {
+    Estado_id: {
       type: DataTypes.STRING,
     },
     UltimaFechMod: {
