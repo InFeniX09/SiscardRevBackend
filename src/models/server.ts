@@ -1,11 +1,7 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
-import menuRouth from "../routes/menu";
 import authRouth from "../routes/auth";
-import infraestructuraRouth from "../routes/infraestructura";
-import CentroAtencionRouth from "../routes/centro-atencion";
-import InventarioDepartamentalRouth from "../routes/inventario-departamental";
 import LogisticaRouth from "../routes/logistica";
 import { connect } from "../db/connection";
 import { connectPoas } from "../db/connectionPoas";
@@ -54,13 +50,6 @@ class Server {
   //Rutas
   routes() {
     this.app.use(this.paths.auth, authRouth);
-    this.app.use(this.paths.infraestructura, infraestructuraRouth);
-    this.app.use(this.paths.CentroAtencion, CentroAtencionRouth);
-    this.app.use(
-      this.paths.InventarioDepartamental,
-      InventarioDepartamentalRouth
-    );
-    this.app.use(this.paths.Menu, menuRouth);
     this.app.use(this.paths.Logistica, LogisticaRouth);
   }
   //Conexion a la base de datos

@@ -21,16 +21,14 @@ import {
   listarTipoDocumento,
   listarTipoMotivoSocket,
   listarTipoSolicitudSocket,
-} from "../controllers/Ayuda/centro-atencion";
+} from "../controllers/Soporte/centro-atencion";
 import {
-  cambioClave,
   crearEquipoDescuentoSocket,
   crearEquipoSocket,
   crearEquipoStockSocket,
   crearMarcaSocket,
   crearModeloSocket,
   crearTipoEquipoSocket,
-  enviarCorreoSocket,
   listarClasificacionEquipoSocket,
   listarEquipoDescuentoSocket,
   listarEquipoSocket,
@@ -42,9 +40,7 @@ import {
   listarModeloSocket,
   listarModeloXMarca,
   listarTipoEquipoSocket,
-  listarTipoEquipoxClSocket,
-  recuperarClave,
-  recuperarClaveToken,
+  listarTipoEquipoxClSocket
 } from "../controllers/Logistica/gestion-equipo";
 import {
   cargaMasivaEquipoSocket,
@@ -58,12 +54,13 @@ import {
   crearUsuario,
   listarClienteSocket,
 } from "../controllers/Sistemas/gestion-entidad";
+import { cambioClave, enviarCorreoSocket, recuperarClave, recuperarClaveToken } from "../controllers/Auth/auth";
+import { crearEmpleado, listarDepartamento, listarDistritoXProvinciaXDepartamento, listarProvinciaXDepartamento, listarTablaEmpleado } from "../controllers/RecursosHumanos/configuraciones";
 
 class Sockets {
   private io: SocketIOServer;
   constructor(io: SocketIOServer) {
     this.io = io;
-
     this.socketEvents();
   }
 
@@ -71,102 +68,9 @@ class Sockets {
     // On connection
     this.io.on("connection", (socket) => {
       console.log(`${socket.id} connected.`);
-      //-------------------------
-      //Extras
-      //-------------------------
-      socket.on("listar-menuxusuarioxperfil", async (data, callback) => {
-        const json = await listarMenuxUsuarioxPerfil(data);
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-reporte", async (data, callback) => {
-        const json = await listarReporte();
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("generar-excelreporte", async (data, callback) => {
-        const json = await generarExcelReporte(data);
-        console.log("json", json);
-        callback(json);
-      });
-      //-------------------------
-      //Datos Personales
-      //-------------------------
-      socket.on("listar-tipodocumento", async (data, callback) => {
-        const json = await listarTipoDocumento();
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-area", async (data, callback) => {
-        const json = await listarArea();
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-puesto", async (data, callback) => {
-        const json = await listarPuesto(data);
-        console.log("json", json);
-        callback(json);
-      });
-      //-------------------------
-      //Centro Atencion
-      //-------------------------
-      socket.on("listar-solicitudxid", async (data, callback) => {
-        const json = await listarSolicitudXId(data);
-        console.log(json)
-        callback(json);
-      });
-      socket.on("armarpdf-solicitud", async (data, callback) => {
-        const json = await armarPdfSolicitudSocket(data);
-        callback(json);
-      });
-      socket.on("listar-accesorioxclxtexusu", async (data, callback) => {
-        const json = await listarAccesorioxClxTexUsuSocket();
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-equipoxclxtexusu", async (data, callback) => {
-        const json = await listarEquipoxClxTexUsuSocket(data);
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-tiposolicitud", async (data, callback) => {
-        const json = await listarTipoSolicitudSocket();
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-tipomotivo", async (data, callback) => {
-        const json = await listarTipoMotivoSocket(data);
-        console.log("json", json);
-        callback(json);
-      });
-      socket.on("listar-misolicitud", async (data, callback) => {
-        const json = await listarSolicitud(data);
-        callback(json);
-      });
-      socket.on("listar-miticket", async (data, callback) => {
-        const json = await listarTicketSocket(data);
-        callback(json);
-      });
-      socket.on("listar-solicitud", async (data, callback) => {
-        const json = await listarSolicitud(data);
-        callback(json);
-      });
-      socket.on("listar-ticket", async (data, callback) => {
-        const json = await listarTicketSocket(data);
-        callback(json);
-      });
-      socket.on("crear-solicitud", async (data, callback) => {
-        const json = await crearSolicitudSocket(data);
-        callback(json);
-      });
-      //-------------------------
-      //AUTH
-      //-------------------------
-      socket.on("enviarcorreo", async (data, callback) => {
-        const json = await enviarCorreoSocket(data);
-        console.log("json", json);
-        callback(json);
-      });
+      /*----------------------------
+      --#Módulo Autorización
+      ----------------------------*/
       socket.on("enviarcorreo", async (data, callback) => {
         const json = await enviarCorreoSocket(data);
         console.log("json", json);
@@ -187,9 +91,69 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      //-------------------------
-      //Gestion-Equipo
-      //-------------------------
+      socket.on("listar-menuxusuarioxperfil", async (data, callback) => {
+        const json = await listarMenuxUsuarioxPerfil(data);
+        console.log("json", json);
+        callback(json);
+      });
+      /*----------------------------
+      --#Módulo Recursos Humanos
+      ----------------------------*/
+      socket.on("listar-tipodocumento", async (data, callback) => {
+        const json = await listarTipoDocumento();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-area", async (data, callback) => {
+        const json = await listarArea();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-puesto", async (data, callback) => {
+        const json = await listarPuesto(data);
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-tablaempleado", async (data, callback) => {
+        const json = await listarTablaEmpleado();
+        callback(json);
+      });
+      socket.on("crear-empleado", async (data, callback) => {
+        const json = await crearEmpleado(data);
+        callback(json);
+      });
+      socket.on("listar-departamento", async (data, callback) => {
+        const json = await listarDepartamento();
+        callback(json);
+      });
+      socket.on("listar-provinciaxdepartamento", async (data, callback) => {
+        const json = await listarProvinciaXDepartamento(data);
+        callback(json);
+      });
+      socket.on("listar-distritoxprovinciaxdepartamento", async (data, callback) => {
+        const json = await listarDistritoXProvinciaXDepartamento(data);
+        callback(json);
+      });
+      /*----------------------------
+      --#Módulo Sistemas
+      ----------------------------*/
+      socket.on("listar-usuario", async (data, callback) => {
+        const dom = await listarUsuarioSocket(data);
+        callback(dom);
+      });
+      socket.on("listar-cliente", async (data, callback) => {
+        const json = await listarClienteSocket();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("crear-usuario", async (data, callback) => {
+        const json = await crearUsuario(data);
+        callback(json);
+      });
+    
+      /*----------------------------
+      --#Módulo Logística
+      ----------------------------*/
       socket.on("listar-clasificacionequipo", async (data, callback) => {
         const json = await listarClasificacionEquipoSocket();
         console.log("json", json);
@@ -246,9 +210,6 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      //-------------------------
-      //Gestion-Stock
-      //-------------------------
       socket.on("listar-equipostock", async (data, callback) => {
         const json = await listarEquipoStockSocket();
         callback(json);
@@ -312,31 +273,59 @@ class Sockets {
         console.log("json", json);
         callback(json);
       });
-      //-------------------------
-      //Gestion-Entidad
-      //-------------------------
-      socket.on("listar-cliente", async (data, callback) => {
-        const json = await listarClienteSocket();
+      /*----------------------------
+      --#Módulo Operaciones
+      ----------------------------*/
+      /*----------------------------
+      --#Módulo Soporte
+      ----------------------------*/
+      socket.on("listar-solicitudxid", async (data, callback) => {
+        const json = await listarSolicitudXId(data);
+        console.log(json)
+        callback(json);
+      });
+      socket.on("armarpdf-solicitud", async (data, callback) => {
+        const json = await armarPdfSolicitudSocket(data);
+        callback(json);
+      });
+      socket.on("listar-tiposolicitud", async (data, callback) => {
+        const json = await listarTipoSolicitudSocket();
         console.log("json", json);
         callback(json);
       });
-      socket.on("crear-usuario", async (data, callback) => {
-        const json = await crearUsuario(data);
+      socket.on("listar-tipomotivo", async (data, callback) => {
+        const json = await listarTipoMotivoSocket(data);
+        console.log("json", json);
         callback(json);
       });
-      //-------------------------
-      //Gestion-Entidad
-      //-------------------------
+      socket.on("listar-misolicitud", async (data, callback) => {
+        const json = await listarSolicitud(data);
+        callback(json);
+      });
+      socket.on("listar-miticket", async (data, callback) => {
+        const json = await listarTicketSocket(data);
+        callback(json);
+      });
+      socket.on("listar-solicitud", async (data, callback) => {
+        const json = await listarSolicitud(data);
+        callback(json);
+      });
+      socket.on("listar-ticket", async (data, callback) => {
+        const json = await listarTicketSocket(data);
+        callback(json);
+      });
+      socket.on("crear-solicitud", async (data, callback) => {
+        const json = await crearSolicitudSocket(data);
+        callback(json);
+      });
       socket.on("crear-ticket", async (data, callback) => {
         const data1 = await crearTicketSocket(data);
         const data2 = await listarTicketSocket(data);
         this.io.emit("listar-ticket", data2);
       });
-      socket.on("listar-usuario", async (data, callback) => {
-        console.log("yara" + data);
-        const dom = await listarUsuarioSocket(data);
-        callback(dom);
-      });
+      /*----------------------------
+      --#Módulo Extras
+      ----------------------------*/
       socket.on("listar-chat", async (data, callback) => {
         console.log("entraste:", data.DeUsuario_id);
         socket.join(data.DeUsuario_id);
@@ -349,6 +338,27 @@ class Sockets {
         this.io.to(payload.ParaUsuario_id).emit("mensaje-personal", chat);
         this.io.to(payload.DeUsuario_id).emit("mensaje-personal", chat);
       });
+      socket.on("listar-reporte", async (data, callback) => {
+        const json = await listarReporte();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("generar-excelreporte", async (data, callback) => {
+        const json = await generarExcelReporte(data);
+        console.log("json", json);
+        callback(json);
+      });    
+      socket.on("listar-accesorioxclxtexusu", async (data, callback) => {
+        const json = await listarAccesorioxClxTexUsuSocket();
+        console.log("json", json);
+        callback(json);
+      });
+      socket.on("listar-equipoxclxtexusu", async (data, callback) => {
+        const json = await listarEquipoxClxTexUsuSocket(data);
+        console.log("json", json);
+        callback(json);
+      });
+    
     });
   }
 }

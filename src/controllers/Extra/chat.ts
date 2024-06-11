@@ -143,13 +143,14 @@ export const generarExcelReporte = async (data: any) => {
   // Enviar el buffer al frontend
   return { buffer: buffer.toString("base64") };
 };
+
 export const listarMenuxUsuarioxPerfil = async (data: any) => {
   const menus = await Menu.findAll({
     raw: true,
     where: {
       IdMenu: {
         [Op.in]: [
-          sequelize.literal(`(SELECT Menu_id FROM MenuAsignado WHERE Perfil_id=${data.Puesto_id}) UNION
+          sequelize.literal(`(SELECT Menu_id FROM MenuAsignado WHERE PerfilUsuario_id=(select Perfil_id from PerfilUsuario where Usuario_id=${data.Usuario_id} )) UNION
          (SELECT Menu_id FROM MenuAsignado WHERE Usuario_id=${data.Usuario_id})`),
         ],
       },

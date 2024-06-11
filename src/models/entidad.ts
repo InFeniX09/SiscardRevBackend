@@ -15,9 +15,6 @@ const Entidad = db[0].define(
     Apellidos: {
       type: DataTypes.STRING,
     },
-    NombreCompleto: {
-      type: DataTypes.STRING,
-    },
     TipoDocumento_id: {
       type: DataTypes.NUMBER,
     },
@@ -30,6 +27,9 @@ const Entidad = db[0].define(
     Telefono: {
       type: DataTypes.STRING,
     },
+    Ubigeo: {
+      type: DataTypes.STRING,
+    },
     Direccion: {
       type: DataTypes.STRING,
     },
@@ -39,13 +39,10 @@ const Entidad = db[0].define(
     FcNacimiento: {
       type: DataTypes.DATE,
     },
-    Area_id: {
-      type: DataTypes.INTEGER,
-    },
-    Puesto_id: {
-      type: DataTypes.INTEGER,
-    },
     TipoEntidad_id: {
+      type: DataTypes.INTEGER,
+    },
+    EntidadRelacion_id: {
       type: DataTypes.INTEGER,
     },
     FcIngreso: {
