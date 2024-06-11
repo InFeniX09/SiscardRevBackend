@@ -18,12 +18,6 @@ const Usuario = db[0].define(
     ClaveTemporal: {
       type: DataTypes.STRING,
     },
-    Correo: {
-      type: DataTypes.STRING,
-    },
-    Telefono: {
-      type: DataTypes.STRING,
-    },
     FcIngreso: {
       type: DataTypes.DATE,
     },

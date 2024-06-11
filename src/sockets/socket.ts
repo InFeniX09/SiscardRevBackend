@@ -56,6 +56,7 @@ import {
 } from "../controllers/Sistemas/gestion-entidad";
 import { cambioClave, enviarCorreoSocket, recuperarClave, recuperarClaveToken } from "../controllers/Auth/auth";
 import { crearEmpleado, listarDepartamento, listarDistritoXProvinciaXDepartamento, listarProvinciaXDepartamento, listarTablaEmpleado } from "../controllers/RecursosHumanos/configuraciones";
+import { listarEmpleadoSinUsuario, listarTablaMenuAsignado } from "../controllers/Sistemas/configuraciones";
 
 class Sockets {
   private io: SocketIOServer;
@@ -150,7 +151,15 @@ class Sockets {
         const json = await crearUsuario(data);
         callback(json);
       });
-    
+      socket.on("listar-tablamenuasignado", async (data, callback) => {
+        const dom = await listarTablaMenuAsignado();
+        callback(dom);
+      });
+      socket.on("listar-empleadosinusuario", async (data, callback) => {
+        const dom = await listarEmpleadoSinUsuario();
+        console.log('urr',dom)
+        callback(dom);
+      });
       /*----------------------------
       --#Módulo Logística
       ----------------------------*/

@@ -14,7 +14,7 @@ const MenuAsignado = db[0].define(
     Usuario_id: {
       type: DataTypes.INTEGER,
     },
-    Perfil_id: {
+    PerfilUsuario_id: {
       type: DataTypes.INTEGER,
     },
     Estado_id: {

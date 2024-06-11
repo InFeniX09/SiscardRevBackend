@@ -60,9 +60,7 @@ export const crearMensajeSocket = async (data: any) => {
 };
 
 export const listarUsuarioSocket = async (data: any) => {
-  let pTipoEntidad_id = data.TipoEntidad_id
-    ? parseInt(data.TipoEntidad_id)
-    : null;
+  
 
   Usuario.belongsTo(Entidad, { foreignKey: "Entidad_id" });
 
@@ -71,13 +69,9 @@ export const listarUsuarioSocket = async (data: any) => {
     attributes: [
       "IdUsuario",
       "Usuario",
-      "Clave",
-      "Correo",
-      "Telefono",
-      "FcIngreso",
-      "FcBaja",
       "RutaImagen",
-      "Entidad_id",
+      "Entidad.Nombres",
+      "Entidad.Apellidos",
       "Online",
       "Estado_id",
     ],
@@ -86,13 +80,7 @@ export const listarUsuarioSocket = async (data: any) => {
         model: Entidad,
         attributes: [],
         required: true,
-        where: {
-          TipoEntidad_id: {
-            [Op.like]: pTipoEntidad_id
-              ? Sequelize.literal(`ISNULL('${pTipoEntidad_id}', '%')`)
-              : "%",
-          },
-        },
+      
       },
     ],
     where: {

@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 export const buscarUsuario = async (req = request, res = response) => {
   const { pUsuario } = req.body;
   Usuario.belongsTo(Entidad, { foreignKey: "Entidad_id" });
-  PerfilUsuario.hasMany(Usuario, { foreignKey: "Usuario_id" });
+  Usuario.hasMany(PerfilUsuario, { foreignKey: "Usuario_id" });
 
   const Query3 = await Usuario.findOne({
     raw: true,
@@ -17,7 +17,6 @@ export const buscarUsuario = async (req = request, res = response) => {
       "Clave",
       "FcIngreso",
       "FcBaja",
-      "Perfil_id"
     ],
     include: [
       {
