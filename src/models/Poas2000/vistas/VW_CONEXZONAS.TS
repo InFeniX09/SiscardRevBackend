@@ -1,21 +1,24 @@
 import { DataTypes } from "sequelize";
-import { db } from "../db/connection";
+import { db1 } from "../../../db/connectionPoas";
 
-const Modelo = db[0].define(
-  "Modelo",
+const VW_CONEXZONAS = db1[0].define(
+  "VW_CONEXZONAS",
   {
-    IdModelo: {
-      type: DataTypes.INTEGER,
+    zona_id: {
+      type: DataTypes.STRING,
       primaryKey: true,
       autoIncrement: true,
     },
-    Modelo: {
+    tipoconexion_id: {
       type: DataTypes.STRING,
     },
-    Marca_id: {
+    sDsConexion: {
       type: DataTypes.STRING,
     },
-    Estado_id: {
+    bDefault: {
+      type: DataTypes.STRING,
+    },
+    sDsTipoConexion: {
       type: DataTypes.STRING,
     }
   },
@@ -25,4 +28,4 @@ const Modelo = db[0].define(
   }
 );
 
-export default Modelo;
+export default VW_CONEXZONAS;

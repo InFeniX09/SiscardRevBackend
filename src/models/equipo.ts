@@ -4,29 +4,32 @@ import { db } from "../db/connection";
 const Equipo = db[0].define(
   "Equipo",
   {
-    IdEquipo: {
+    id_equipo: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    Cliente_id: {
-      type: DataTypes.INTEGER,
-    },
-    Modelo_id: {
-      type: DataTypes.INTEGER,
-    },
-    Area_id: {
-      type: DataTypes.INTEGER,
-    },
-    Especificacion: {
+    equipo_imei: {
       type: DataTypes.STRING,
     },
-    Gamma: {
+    id_marca: {
+      type: DataTypes.INTEGER,
+    },
+    id_modelo: {
+      type: DataTypes.INTEGER,
+    },
+    id_estado: {
       type: DataTypes.STRING,
     },
-    Estado_id: {
+    id_area: {
       type: DataTypes.STRING,
     },
+    id_cliente: {
+      type: DataTypes.STRING,
+    },
+    id_entidad: {
+      type: DataTypes.STRING,
+    }
   },
   {
     freezeTableName: true,

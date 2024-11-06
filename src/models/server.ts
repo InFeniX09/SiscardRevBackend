@@ -3,10 +3,14 @@ import http from "http";
 import cors from "cors";
 import authRouth from "../routes/auth";
 import LogisticaRouth from "../routes/logistica";
+import PilotajeRouth from "../routes/pilotaje";
+import SelectRouth from "../routes/select";
+import PdfRouth from "../routes/Pdf"
 import { connect } from "../db/connection";
 import { connectPoas } from "../db/connectionPoas";
 import { Server as SocketIOServer } from "socket.io";
 import Sockets from "../sockets/socket";
+import { ConnectDWH } from "../db/connectionDWH";
 
 class Server {
   //Variables para definir el servidor
@@ -26,6 +30,8 @@ class Server {
     Select: "/select",
     Menu: "/menu",
     Logistica: "/Logistica",
+    Pilotaje: "/pilotaje",
+    Pdf:"/pdf"
   };
   //Inicializador
   constructor() {
@@ -51,12 +57,16 @@ class Server {
   routes() {
     this.app.use(this.paths.auth, authRouth);
     this.app.use(this.paths.Logistica, LogisticaRouth);
+    this.app.use(this.paths.Pilotaje, PilotajeRouth);
+    this.app.use(this.paths.Select, SelectRouth);
+    this.app.use(this.paths.Pdf, PdfRouth)
   }
   //Conexion a la base de datos
   async dbConnect() {
     try {
       await connect();
       await connectPoas();
+      await ConnectDWH();
       console.log("Bases de datos online");
     } catch (error) {
       console.log("Bases de datos offline");

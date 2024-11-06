@@ -12,6 +12,9 @@ const Perfil = db[0].define(
     Perfil: {
       type: DataTypes.INTEGER,
     },
+    Area_id:{
+      type: DataTypes.INTEGER,
+    },
     Estado_id: {
       type: DataTypes.STRING,
     },

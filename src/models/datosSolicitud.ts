@@ -1,23 +1,23 @@
 import { DataTypes } from "sequelize";
 import { db } from "../db/connection";
 
-const Modelo = db[0].define(
-  "Modelo",
+const DatosSolicitud = db[0].define(
+  "DatosSolicitud",
   {
-    IdModelo: {
+    IdSolicitud: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    Modelo: {
+    Nombre: {
       type: DataTypes.STRING,
     },
-    Marca_id: {
+    Dni: {
       type: DataTypes.STRING,
     },
-    Estado_id: {
+    Puesto: {
       type: DataTypes.STRING,
-    }
+    },
   },
   {
     freezeTableName: true,
@@ -25,4 +25,4 @@ const Modelo = db[0].define(
   }
 );
 
-export default Modelo;
+export default DatosSolicitud;

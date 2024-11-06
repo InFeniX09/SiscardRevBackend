@@ -12,6 +12,9 @@ const Marca = db[0].define(
     Marca: {
       type: DataTypes.STRING,
     },
+    IdTipoEquipo:{
+      type: DataTypes.STRING
+    },
     Estado_id: {
       type: DataTypes.STRING,
     },

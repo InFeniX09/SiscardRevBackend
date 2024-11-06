@@ -1,10 +1,7 @@
-import { Request, Response, request, response } from "express";
-import { PassThrough } from "stream";
-
-import Mensaje from "../../models/mensaje";
 import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
-import { DatabaseError, Op, Sequelize, json } from "sequelize";
+
+import { Op } from "sequelize";
 import TipoSolicitud from "../../models/tiposolicitud";
 import TipoMotivo from "../../models/tipomotivo";
 import Solicitud from "../../models/solicitud";
@@ -17,12 +14,20 @@ import EquipoStock from "../../models/equipostock";
 import EquipoSerie from "../../models/equiposerie";
 import TipoEquipo from "../../models/tipoequipo";
 import PDFDocument from "pdfkit";
-import fs from "fs";
+
 import EquipoDescuento from "../../models/equipodescuento";
 import Area from "../../models/area";
 import TipoDocumento from "../../models/tipodocumento";
 import Puesto from "../../models/puesto";
-import { include } from "underscore";
+import VW_SR_MIS_TICKETS from "../../models/SR/VW_SR_MIS_TICKETS";
+
+import Prioridad from "../../models/priodidad";
+import { request, Response, response } from "express";
+import DatosSolicitud from "../../models/datosSolicitud";
+import PerfilUsuario from "../../models/perfilusuario";
+import Perfil from "../../models/perfil";
+import { result } from "underscore";
+
 export const listarTipoSolicitudSocket = async () => {
   const Query3 = await TipoSolicitud.findAll({
     raw: true,
@@ -50,12 +55,13 @@ export const listarTipoMotivoSocket = async (data: any) => {
   return Query3;
 };
 
-export const listarSolicitud = async (data: any) => {
+export const listarPersonalSolicitud = async (data: any) => {
   let pUsuario_id = data.Usuario_id;
 
   Solicitud.belongsTo(TipoSolicitud, { foreignKey: "TipoSolicitud_id" });
   Solicitud.belongsTo(TipoMotivo, { foreignKey: "TipoMotivo_id" });
   Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
+  Solicitud.belongsTo(DatosSolicitud, { foreignKey: "IdSolicitud" });
 
   const results = await Solicitud.findAll({
     attributes: ["IdSolicitud", "FcCreacion", "Estado_id"],
@@ -75,14 +81,15 @@ export const listarSolicitud = async (data: any) => {
         attributes: ["Usuario", "IdUsuario"],
         required: true,
       },
+      {
+        model: DatosSolicitud,
+        attributes: ["Nombre"],
+        required: true,
+      },
     ],
     where: {
       Estado_id: "1",
-      Usuario_id: {
-        [Op.like]: pUsuario_id
-          ? Sequelize.literal(`ISNULL('${pUsuario_id}', '%')`)
-          : "%",
-      },
+      Usuario_id: pUsuario_id,
     },
   });
 
@@ -94,6 +101,59 @@ export const listarSolicitud = async (data: any) => {
       TipoMotivo: plainResult.TipoMotivo.TipoMotivo,
       Usuario: plainResult.Usuario.Usuario,
       IdUsuario: plainResult.Usuario.IdUsuario,
+      Nombre: plainResult.DatosSolicitud.Nombre,
+    };
+  });
+
+  return Query3;
+};
+
+//TODOS
+//PONER EL NOMBRE
+export const listarTodosSolicitud = async (data: any) => {
+  Solicitud.belongsTo(TipoSolicitud, { foreignKey: "TipoSolicitud_id" });
+  Solicitud.belongsTo(TipoMotivo, { foreignKey: "TipoMotivo_id" });
+  Solicitud.belongsTo(Usuario, { foreignKey: "Usuario_id" });
+  Solicitud.belongsTo(DatosSolicitud, { foreignKey: "IdSolicitud" });
+
+  const results = await Solicitud.findAll({
+    attributes: ["IdSolicitud", "FcCreacion", "Estado_id"],
+    include: [
+      {
+        model: TipoSolicitud,
+        attributes: ["TipoSolicitud"],
+        required: true,
+      },
+      {
+        model: TipoMotivo,
+        attributes: ["TipoMotivo"],
+        required: true,
+      },
+      {
+        model: Usuario,
+        attributes: ["Usuario", "IdUsuario"],
+        required: true,
+      },
+      {
+        model: DatosSolicitud,
+        attributes: ["Nombre"],
+        required: true,
+      },
+    ],
+    where: {
+      Estado_id: "1",
+    },
+  });
+
+  const Query3 = results.map((result) => {
+    const plainResult = result.get({ plain: true });
+    return {
+      ...plainResult,
+      TipoSolicitud: plainResult.TipoSolicitud.TipoSolicitud,
+      TipoMotivo: plainResult.TipoMotivo.TipoMotivo,
+      Usuario: plainResult.Usuario.Usuario,
+      IdUsuario: plainResult.Usuario.IdUsuario,
+      Nombre: plainResult.DatosSolicitud.Nombre,
     };
   });
 
@@ -101,129 +161,324 @@ export const listarSolicitud = async (data: any) => {
 };
 //Listo
 export const crearSolicitudSocket = async (data: any) => {
-  const Query0 = await Solicitud.findOne({
-    where: {
-      TipoSolicitud_id: data.TipoSolicitud_id,
-      TipoMotivo_id: data.TipoMotivo_id,
-      Usuario_id: data.Usuario_id,
-    },
-  });
-  if (Query0) {
-    return { msg: "Existe" };
-  } else {
+  try {
     const Query3 = await Solicitud.create({
       TipoSolicitud_id: data.TipoSolicitud_id,
       TipoMotivo_id: data.TipoMotivo_id,
       Usuario_id: data.Usuario_id,
+      Cliente_id: data.Cliente_id,
+      Estado_id: "1",
     });
-    return { msg: "NoExiste", data: Query3 };
+
+    const Query4 = await DatosSolicitud.create({
+      //datos
+      Nombre: data.Nombre,
+      Dni: data.Dni,
+      Puesto: data.Rol,
+    });
+
+    return { msg: "CREADO EN DATOS SOLICITUD", data: data };
+  } catch (error) {
+    console.log(error);
+    return { msg: "HUBO UN ERROR", error };
   }
+
+  //agregar los datos extras
 };
 
-export const listarTicketSocket = async (data: any) => {
-  let pUsuario_id = data.Usuario_id ? parseInt(data.Usuario_id) : null;
-
-  const Query3 = await Ticket.findAll({
+export const listarIdEntidad = async (data: any) => {
+  const Query3 = await Entidad.findOne({
     raw: true,
-    attributes: ["IdTicket", "Asunto", "Descripcion", "Usuario_id"],
+    attributes: ["IdEntidad"],
     where: {
-      Estado_id: "1",
-      Usuario_id: {
-        [Op.like]: pUsuario_id
-          ? Sequelize.literal(`ISNULL('${pUsuario_id}', '%')`)
-          : "%",
+      NroDocumento: data,
+    },
+  });
+
+  return Query3;
+};
+
+export const listarTicketPersonalSocket = async (data: any) => {
+  let pUsuario_id = data.Usuario_id ? parseInt(data.Usuario_id) : null;
+  const Query3 = await VW_SR_MIS_TICKETS.findAll({
+    raw: true,
+    where: {
+      Usuario_id: pUsuario_id,
+    },
+  });
+
+  return Query3;
+};
+
+export const listarTicketTodosSocket = async (data: string) => {
+  Ticket.belongsTo(Prioridad, { foreignKey: "idPrioridad" });
+  Ticket.belongsTo(Area, { foreignKey: "Area_id" });
+  const results = await Ticket.findAll({
+    attributes: [
+      "IdTicket",
+      "Asunto",
+      "Descripcion",
+      "FcCreacion",
+      "Usuario_id",
+    ],
+    include: [
+      {
+        model: Prioridad,
+        attributes: ["Prioridad"],
+      },
+      {
+        model: Area,
+        attributes: ["Area"],
+      },
+    ],
+    where: {
+      Estado_id: "3",
+      Area_id: data,
+      Responsable_id: {
+        [Op.eq]: null,
       },
     },
+  });
+
+  const Query3 = results.map((result) => {
+    const plainResult = result.get({ plain: true });
+    return {
+      ...plainResult,
+      IdTicket: plainResult.IdTicket,
+      Asunto: plainResult.Asunto,
+      Descripcion: plainResult.Descripcion,
+      FcCreacion: plainResult.FcCreacion,
+      Area_id: plainResult.Area_id,
+      Usuario_id: plainResult.Usuario_id,
+      Prioridad: plainResult.Prioridad.Prioridad,
+      Area: plainResult.Area.Area,
+    };
   });
 
   return Query3;
 };
 
 export const crearTicketSocket = async (data: any) => {
-  let pasunto = data.Asunto?.toString();
-  let pdescripcion = data.Descripcion?.toString();
-  let pUsuario_id = data.Usuario_id ? parseInt(data.Usuario_id) : null;
-  let pidArea = data.idArea ? parseInt(data.idArea) : null;
-  let pidTicketcc = data.idTicketcc ? parseInt(data.idTicketcc) : null;
-  let pidPrioridad = data.idPrioridad ? parseInt(data.idPrioridad) : null;
-
   const Query3 = await Ticket.create({
-    Asunto: pasunto,
-    Descripcion: pdescripcion,
-    idUsuario: pUsuario_id,
-    idArea: pidArea,
-    idTicketcc: pidTicketcc,
-    idPrioridad: pidPrioridad,
+    Asunto: data.Asunto,
+    Descripcion: data.Descripcion,
+    Usuario_id: data.Usuario_id,
+    Area_id: data.idArea,
+    Tickectcc_id: null,
+    idPrioridad: data.idPrioridad,
+    Estado_id: "3",
   });
 
   return Query3;
 };
 
-export const listarEquipoxClxTexUsuSocket = async (data: any) => {
-  Equipo.hasMany(EquipoStock, { foreignKey: "Equipo_id" });
-  Equipo.hasMany(EquipoSerie, { foreignKey: "Equipo_id" });
-  Equipo.belongsTo(Cliente, { foreignKey: "Cliente_id" });
-  Equipo.belongsTo(Modelo, { foreignKey: "Modelo_id" });
-  Modelo.belongsTo(Marca, { foreignKey: "Marca_id" });
-  Marca.belongsTo(TipoEquipo, { foreignKey: "TipoEquipo_id" });
-
-  const Query3 = await Equipo.findAll({
-    raw: true,
-    attributes: [
-      "IdEquipo",
-      "Cliente.CodCliente",
-      "Modelo.Marca.Marca",
-      "Modelo.Modelo",
-      "EquipoSeries.Serie",
-      "EquipoSeries.IdEquipoSerie",
-    ],
-    include: [
-      {
-        model: EquipoStock,
-        required: true,
-        attributes: [],
-        where: {
-          Usuario_id: 5,
-        },
-      },
-      {
-        model: EquipoSerie,
-        attributes: [],
-        required: true,
-      },
-      {
-        model: Modelo,
-        attributes: [],
-        required: true,
-        include: [
-          {
-            model: Marca,
-            attributes: [],
-            required: true,
-            include: [
-              {
-                model: TipoEquipo,
-                attributes: [],
-                required: true,
-                where: {
-                  Clasificacion: "Seriado",
-                  TipoEquipo: data.TipoEquipo,
-                },
-              },
-            ],
-          },
-        ],
-      },
-      {
-        model: Cliente,
-        attributes: [],
-        required: true,
-      },
-    ],
-    where: {},
+export const actualizarResponsableTicket = async (
+  idTicket: any,
+  nuevosDatos: any
+) => {
+  const Query3 = await Ticket.update(nuevosDatos, {
+    where: {
+      IdTicket: idTicket,
+    },
   });
 
   return Query3;
+};
+
+export const listarTicketResponsable = async (idResponsable: any) => {
+  Ticket.belongsTo(Prioridad, { foreignKey: "idPrioridad" });
+  Ticket.belongsTo(Area, { foreignKey: "Area_id" });
+  const results = await Ticket.findAll({
+    attributes: [
+      "IdTicket",
+      "Asunto",
+      "Descripcion",
+      "FcCreacion",
+      "Usuario_id",
+    ],
+    include: [
+      {
+        model: Prioridad,
+        attributes: ["Prioridad"],
+      },
+      {
+        model: Area,
+        attributes: ["Area"],
+      },
+    ],
+    where: {
+      Responsable_id: idResponsable,
+    },
+  });
+
+  const Query3 = results.map((result) => {
+    const plainResult = result.get({ plain: true });
+    return {
+      ...plainResult,
+      IdTicket: plainResult.IdTicket,
+      Asunto: plainResult.Asunto,
+      Descripcion: plainResult.Descripcion,
+      FcCreacion: plainResult.FcCreacion,
+      Area_id: plainResult.Area_id,
+      Usuario_id: plainResult.Usuario_id,
+      Prioridad: plainResult.Prioridad.Prioridad,
+      Area: plainResult.Area.Area,
+    };
+  });
+
+  return Query3;
+};
+
+export const areaUsuario = async (idUsuario: any) => {
+  const Query3 = await PerfilUsuario.findOne({
+    attributes: ["Perfil_id"],
+    where: {
+      Usuario_id: idUsuario,
+    },
+  });
+
+  const area = await Perfil.findOne({
+    attributes: ["Area_id"],
+    where: {
+      IdPerfil: Query3?.dataValues.Perfil_id,
+    },
+  });
+
+  return area?.dataValues.Area_id;
+};
+
+export const asignarEquipos = async (data: any) => {
+  try {
+    const entidad = await Entidad.findOne({
+      attributes: ["IdEntidad"],
+      where: [
+        {
+          NroDocumento: data.nroDni,
+        },
+      ],
+    });
+
+    if (!entidad) {
+      throw new Error(
+        "Entidad no encontrada para el número de DNI proporcionado."
+      );
+    }
+
+    const idEntidad = entidad.dataValues.IdEntidad;
+
+    const whereConditions: any = {
+      [Op.or]: [],
+    };
+
+    // Agregar condiciones solo si los valores están definidos y no son vacíos
+
+    if (data.celular) {
+      whereConditions[Op.or].push({ id_equipo: data.celular });
+    }
+    if (data.laptop) {
+      whereConditions[Op.or].push({ id_equipo: data.laptop });
+    }
+    if (data.chip) {
+      whereConditions[Op.or].push({ id_equipo: data.chip });
+    }
+
+    if (whereConditions[Op.or].length === 0) {
+      throw new Error("No hay equipos válidos para actualizar");
+    }
+
+    const [affectedRows] = await Equipo.update(
+      {
+        id_entidad: idEntidad,
+        id_estado: "9",
+      },
+      {
+        where: whereConditions,
+      }
+    );
+
+    if (affectedRows === 0) {
+      throw new Error(
+        "No se encontraron equipos que coincidan con los criterios de actualización."
+      );
+    }
+
+    const [solicitudUpdated] = await Solicitud.update(
+      { Estado_id: "2" },
+      {
+        where: {
+          IdSolicitud: data.nroSolicitud,
+        },
+      }
+    );
+
+    if (solicitudUpdated === 0) {
+      throw new Error(
+        "No se encontró ninguna solicitud para actualizar con el ID proporcionado."
+      );
+    }
+    //retornar success y ya estaria.
+
+    return { success: true, affectedRows, solicitudUpdated };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error en la asignación de equipos:", error.message);
+      return { error: error.message };
+    } else {
+      console.error("Error desconocido:", error);
+      return { error: "Error desconocido" };
+    }
+  }
+};
+
+export const listarEquipoxClxTexUsuSocket = async (data: any) => {
+  Equipo.belongsTo(Modelo, { foreignKey: "id_modelo" });
+  Equipo.belongsTo(Marca, { foreignKey: "id_marca" });
+  Marca.belongsTo(TipoEquipo, { foreignKey: "IdTipoEquipo" });
+
+  try {
+    const Query3 = await Equipo.findAll({
+      attributes: ["id_equipo", "equipo_imei"],
+      include: [
+        {
+          model: Modelo,
+          attributes: ["Modelo"],
+          required: true,
+        },
+        {
+          model: Marca,
+          attributes: ["Marca"],
+          required: true,
+          include: [
+            {
+              model: TipoEquipo,
+              attributes: ["TipoEquipo"],
+              where: {
+                TipoEquipo: data.TipoEquipo,
+              },
+            },
+          ],
+        },
+      ],
+      where: {
+        [Op.or]: [{ id_estado: "7" }, { id_estado: "8" }],
+      },
+    });
+
+    const results = Query3.map((result) => {
+      const plainResult = result.get({ plain: true });
+      return {
+        ...plainResult,
+        id_equipo: plainResult.id_equipo,
+        equipo_imei: plainResult.equipo_imei,
+        Modelo: plainResult.Modelo.Modelo,
+        Marca: plainResult.Marca.Marca,
+      };
+    });
+
+    return results;
+  } catch (error) {
+    return error;
+  }
 };
 
 export const listarAccesorioxClxTexUsuSocket = async () => {
@@ -566,8 +821,6 @@ export const armarPdfSolicitudSocket = async (data: any) => {
             width: 400,
           });
         doc.fontSize(11).text(`Area: ${usuario.Area}`, 20, 665, { width: 400 });
-
-        console.log("Gonzalooooo", usuario.NombreCompleto);
       });
       UsuarioQuery1.forEach((usuario: any) => {
         doc
@@ -578,7 +831,6 @@ export const armarPdfSolicitudSocket = async (data: any) => {
         doc
           .fontSize(11)
           .text(`Area: ${usuario.Area}`, 370, 665, { width: 400 });
-        console.log("Gonzalooooo", usuario.NombreCompleto);
       });
       let y1Pos = 250; // Posición inicial
       const line1Spacing = 15; // Espaciado entre líneas
@@ -587,8 +839,6 @@ export const armarPdfSolicitudSocket = async (data: any) => {
       const formattedData = Query1.map((equipo: any) => {
         return `${equipo.Tiempo}mes:S/.${equipo.Precio.toFixed(2)}`;
       }).join(";");
-
-      console.log("sue", formattedData);
 
       Query0.forEach((item: any) => {
         if (item.TipoEquipo === "Chip") {
@@ -599,8 +849,6 @@ export const armarPdfSolicitudSocket = async (data: any) => {
           doc.fontSize(12).text(`${formattedData}`, 210, y1Pos);
         }
         y1Pos += line1Spacing;
-        console.log("sara", formattedData);
-        console.log("sara1", `${item.TipoEquipo} ${item.Marca} ${item.Modelo}`);
       });
 
       doc.end();
@@ -621,13 +869,69 @@ export const listarTipoDocumento = async () => {
   return Query3;
 };
 
-export const listarArea = async () => {
+export const listarAreaSocket = async (req = request, res = response) => {
   const Query3 = await Area.findAll({
     raw: true,
     attributes: ["IdArea", "Area", "Estado_id"],
     where: {},
   });
+
   return Query3;
+};
+
+export const listarArea = async (req = request, res = response) => {
+  const Query3 = await Area.findAll({
+    raw: true,
+    attributes: ["IdArea", "Area", "Estado_id"],
+    where: {},
+  });
+
+  if (Query3) {
+    try {
+      return res.status(200).json({
+        ok: true,
+        msg: "Informacion Correcta",
+        Query3,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        ok: false,
+        msg: "Error de conexión",
+      });
+    }
+  } else {
+    res.status(401).json({
+      ok: false,
+      msg: "Error de conexión",
+    });
+  }
+};
+
+export const listarPrioridad = async (req = request, res = response) => {
+  const Query3 = await Prioridad.findAll({
+    raw: true,
+    attributes: ["IdPrioridad", "Prioridad"],
+    where: {},
+  });
+  if (Query3) {
+    try {
+      return res.status(200).json({
+        ok: true,
+        msg: "Informacion Correcta",
+        Query3,
+      });
+    } catch (err) {
+      return res.status(400).json({
+        ok: false,
+        msg: "Error de conexión",
+      });
+    }
+  } else {
+    res.status(401).json({
+      ok: false,
+      msg: "Error de conexión",
+    });
+  }
 };
 
 export const listarPuesto = async (data: any) => {
@@ -659,6 +963,15 @@ export const listarSolicitudXId = async (data: any) => {
       { model: TipoMotivo, attributes: [], required: true },
       { model: Usuario, attributes: [], required: true },
     ],
+    where: { IdSolicitud: data.IdSolicitud },
+  });
+  return Query3;
+};
+
+export const listarDatosSolicitud = async (data: any) => {
+  const Query3 = await DatosSolicitud.findOne({
+    raw: true,
+    attributes: ["Nombre", "Dni", "Puesto"],
     where: { IdSolicitud: data.IdSolicitud },
   });
   return Query3;

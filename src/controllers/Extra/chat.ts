@@ -60,8 +60,6 @@ export const crearMensajeSocket = async (data: any) => {
 };
 
 export const listarUsuarioSocket = async (data: any) => {
-  
-
   Usuario.belongsTo(Entidad, { foreignKey: "Entidad_id" });
 
   const Query3 = await Usuario.findAll({
@@ -80,7 +78,6 @@ export const listarUsuarioSocket = async (data: any) => {
         model: Entidad,
         attributes: [],
         required: true,
-      
       },
     ],
     where: {
@@ -146,3 +143,45 @@ export const listarMenuxUsuarioxPerfil = async (data: any) => {
   });
   return menus;
 };
+
+export const PostlistarMenuxUsuarioxPerfil = async (
+  req = request,
+  res = response
+) => {
+  const {pUsuario} = req.body
+  const Query3 = await Menu.findAll({
+    raw: true,
+    where: {
+      IdMenu: {
+        [Op.in]: [
+          sequelize.literal(`(SELECT Menu_id FROM MenuAsignado WHERE PerfilUsuario_id=(select Perfil_id from PerfilUsuario where Usuario_id=${pUsuario} )) UNION
+         (SELECT Menu_id FROM MenuAsignado WHERE Usuario_id=${pUsuario})`),
+        ],
+      },
+    },
+  });
+
+  if (Query3) {
+    try {
+      console.log(Query3);
+      return res.status(200).json({
+        ok: true,
+        msg: "Informacion Correcta",
+        Query3,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(400).json({
+        ok: false,
+        msg: "Error de conexión",
+      });
+    }
+  } else {
+    res.status(401).json({
+      ok: false,
+      msg: "Error de conexión",
+    });
+  }
+};
+
+//TENGO QUE REVISAR ESTO

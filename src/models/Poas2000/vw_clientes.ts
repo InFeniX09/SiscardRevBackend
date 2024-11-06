@@ -1,21 +1,20 @@
 import { DataTypes } from "sequelize";
-import { db } from "../db/connection";
+import { db1 } from "../../db/connectionPoas";
 
-const Modelo = db[0].define(
-  "Modelo",
+const VW_Clientes = db1[0].define(
+  "VW_Clientes",
   {
-    IdModelo: {
-      type: DataTypes.INTEGER,
+    cliente_id: {
+      type: DataTypes.STRING,
       primaryKey: true,
-      autoIncrement: true,
     },
-    Modelo: {
+    sDsCliente: {
       type: DataTypes.STRING,
     },
-    Marca_id: {
+    sDsNif: {
       type: DataTypes.STRING,
     },
-    Estado_id: {
+    sDsDireccion: {
       type: DataTypes.STRING,
     }
   },
@@ -25,4 +24,4 @@ const Modelo = db[0].define(
   }
 );
 
-export default Modelo;
+export default VW_Clientes;

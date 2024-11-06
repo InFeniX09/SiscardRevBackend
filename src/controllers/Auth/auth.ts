@@ -2,22 +2,18 @@ import { request, response } from "express";
 import Usuario from "../../models/usuario";
 import Entidad from "../../models/entidad";
 import PerfilUsuario from "../../models/perfilusuario";
+import Perfil from "../../models/perfil";
 const nodemailer = require("nodemailer");
 
 export const buscarUsuario = async (req = request, res = response) => {
-  const { pUsuario } = req.body;
+
+  const { pUsuario, nuevosDatos } = req.body;
   Usuario.belongsTo(Entidad, { foreignKey: "Entidad_id" });
   Usuario.hasMany(PerfilUsuario, { foreignKey: "Usuario_id" });
-
+  PerfilUsuario.belongsTo(Perfil, {foreignKey: "Perfil_id"});
+  
   const Query3 = await Usuario.findOne({
-    raw: true,
-    attributes: [
-      "IdUsuario",
-      "Usuario",
-      "Clave",
-      "FcIngreso",
-      "FcBaja",
-    ],
+    attributes: ["IdUsuario", "Usuario", "Clave", "FcIngreso", "FcBaja"],
     include: [
       {
         model: Entidad,
@@ -28,6 +24,10 @@ export const buscarUsuario = async (req = request, res = response) => {
         model: PerfilUsuario,
         attributes: [],
         required: true,
+        include:[{
+          model:Perfil,
+          attributes: ["Area_id"],
+        }]
       },
     ],
     where: {
@@ -35,9 +35,18 @@ export const buscarUsuario = async (req = request, res = response) => {
       Usuario: pUsuario,
     },
   });
+
+
+  await Usuario.update(nuevosDatos, {
+    where: {
+      Usuario: pUsuario,
+    },
+  });
+
+
   if (Query3) {
     try {
-      console.log(Query3);
+      console.log("QUERY 3333333333333",Query3);
       return res.status(200).json({
         ok: true,
         msg: "Informacion Correcta",
@@ -57,6 +66,7 @@ export const buscarUsuario = async (req = request, res = response) => {
     });
   }
 };
+
 export const enviarCorreoSocket = async (data: any) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
