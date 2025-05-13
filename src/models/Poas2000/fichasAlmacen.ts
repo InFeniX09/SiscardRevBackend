@@ -1,18 +1,17 @@
 import { DataTypes } from "sequelize";
 import { db1 } from "../../db/connectionPoas";
 
-const componentes = db1[0].define(
-  "componentes",
+const fichasAlmacen = db1[0].define(
+  "fichasAlmacen",
   {
+    almacen_id: {
+      type: DataTypes.STRING,
+    },
     componente_id: {
       type: DataTypes.STRING,
-      primaryKey: true,
     },
-    sDsComponente: {
+    nExActuales: {
       type: DataTypes.STRING,
-    },
-    nUltimoPrecio: {
-      type: DataTypes.STRING
     }
   },
   {
@@ -21,4 +20,4 @@ const componentes = db1[0].define(
   }
 );
 
-export default componentes;
+export default fichasAlmacen;

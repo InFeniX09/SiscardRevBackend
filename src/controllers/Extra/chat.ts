@@ -7,6 +7,10 @@ import Reporte from "../../models/reporte";
 import db1 from "../../db/connectionPoas";
 import Menu from "../../models/menu";
 import sequelize from "sequelize";
+import Zonas from "../../models/Poas2000/zonas";
+import VW_ZONAS from "../../models/Poas2000/vw_zonas";
+import Stock from "../../models/Poas2000/equipos-siscard";
+import fichasAlmacen from "../../models/Poas2000/fichasAlmacen";
 const ExcelJS = require("exceljs");
 
 export const listarchatSocket = async (data: any) => {
@@ -185,3 +189,38 @@ export const PostlistarMenuxUsuarioxPerfil = async (
 };
 
 //TENGO QUE REVISAR ESTO
+export const listarZonasSocket = async (data: any) => {
+
+  const Query3 = await VW_ZONAS.findAll({
+    raw: true,
+    attributes: [
+      "zona_id",
+      "estadozona_id"
+    ],
+    
+    where: {
+      estadoZona_id: "1",
+    },
+  });
+  return Query3;
+};
+
+
+export const listarEquiposSiscardSocket = async (data: any) => {
+  const Query3 = await fichasAlmacen.findAll({
+    raw: true,
+    attributes: [
+      "almacen_id",
+      "componente_id",
+      "nExActuales"
+    ],
+    
+    where: {
+      almacen_id: data,
+      componente_id:{
+        [Op.like]: 'sis-%'
+      }
+    },
+  });
+  return Query3;
+};

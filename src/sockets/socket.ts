@@ -2,9 +2,11 @@ import { Server as SocketIOServer } from "socket.io";
 import {
   crearMensajeSocket,
   generarExcelReporte,
+  listarEquiposSiscardSocket,
   listarMenuxUsuarioxPerfil,
   listarReporte,
   listarUsuarioSocket,
+  listarZonasSocket,
   listarchatSocket,
 } from "../controllers/Extra/chat";
 import {
@@ -170,6 +172,16 @@ class Sockets {
       ----------------------------*/
       socket.on("listar-usuario", async (data, callback) => {
         const dom = await listarUsuarioSocket(data);
+        callback(dom);
+      });
+
+      socket.on("listar-zona", async (data, callback) => {
+        const dom = await listarZonasSocket(data);
+        callback(dom);
+      });
+
+      socket.on("listar-equipos-siscard", async (data, callback) => {
+        const dom = await listarEquiposSiscardSocket(data);
         callback(dom);
       });
 
