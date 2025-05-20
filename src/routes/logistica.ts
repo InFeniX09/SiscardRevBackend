@@ -117,7 +117,7 @@ router.post("/generar-pdf-equipos", async (req, res) => {
     ); // pdfBytes es Uint8Array
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=archivo.pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=PDF.pdf");
     res.setHeader("Content-Length", pdfBytes.length); // recomendable
 
     // ⚠️ ENVÍA COMO BUFFER PARA EVITAR DAÑOS
@@ -264,11 +264,6 @@ async function generarPDFEquipos(
       )
     );
 
-    Usuario.belongsTo(Entidad, {
-      foreignKey: "Entidad_id",
-      as: "EntidadUsuario",
-    });
-
     const nombrePersonal = (await Usuario.findOne({
       raw: true,
       attributes: [
@@ -305,6 +300,11 @@ async function generarPDFEquipos(
         "../../../src/assets/PLANTILLA_CARGO.jpg"
       );
 
+      const imagePathLogo = path.resolve(
+        __dirname,
+        "../../../src/assets/logoreal.jpg"
+      );
+
       if (fs.existsSync(imagePath)) {
         doc.image(imagePath, 0, 0, {
           width: doc.page.width,
@@ -313,6 +313,17 @@ async function generarPDFEquipos(
       } else {
         console.warn("Imagen no encontrada:", imagePath);
       }
+
+
+      if (fs.existsSync(imagePathLogo)) {
+        doc.image(imagePathLogo, 480, 10, {
+          width: 100,
+          height: 60
+        });
+      } else {
+        console.warn("Imagen no encontrada:", imagePathLogo);
+      }
+
 
       const today = new Date();
       const formattedDate = `${String(today.getDate()).padStart(
@@ -343,7 +354,7 @@ async function generarPDFEquipos(
         const componente_id = nombresEquipos[index]?.componente_id || "";
 
         doc.fontSize(10).text(nombreComponente, 140, y);
-        doc.fontSize(10).text(snmserie, 300, y);
+        doc.fontSize(10).text(snmserie, 370, y);
         
 
         if (componente_id.toUpperCase().includes("SIS-CEL")) {

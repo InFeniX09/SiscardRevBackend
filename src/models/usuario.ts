@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { db } from "../db/connection";
+import Entidad from "./entidad";
 
 const Usuario = db[0].define(
   "Usuario",
@@ -48,5 +49,10 @@ const Usuario = db[0].define(
     timestamps: false, // desactiva el uso de createdAt y updatedAt
   }
 );
+
+Usuario.belongsTo(Entidad, {
+  foreignKey: "Entidad_id",
+  as: "EntidadUsuario", // Este alias lo usarás en el include
+});
 
 export default Usuario;

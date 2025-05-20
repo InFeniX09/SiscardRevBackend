@@ -219,6 +219,9 @@ export const listarEquiposSiscardSocket = async (data: any) => {
       almacen_id: data,
       componente_id:{
         [Op.like]: 'sis-%'
+      },
+      nExActuales: {
+        [Op.gt]: 0 // condición para que sea mayor a 0
       }
     },
   });
