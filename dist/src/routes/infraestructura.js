@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const infraestructura_1 = require("../controllers/infraestructura");
+const router = (0, express_1.Router)();
+router.get("/listarcliente", infraestructura_1.listarcliente);
+router.get("/listarproveedor", infraestructura_1.listarproveedor);
+router.get("/listarcolor", infraestructura_1.listarcolor);
+router.get("/listartipomenu", infraestructura_1.listartipomenu);
+router.get("/listarmenu", infraestructura_1.listarmenu);
+router.get("/listarpersona", infraestructura_1.listarpersona);
+router.get("/listarusuario", infraestructura_1.listarusuario);
+/*Crear*/
+router.post("/crearequipo", infraestructura_1.crearequipo);
+router.post("/crearequipocontrol", infraestructura_1.crearequipocontrol);
+router.post("/crearequipodescuento", infraestructura_1.crearequipodescuento);
+router.post("/creartipoequipo", infraestructura_1.creartipoequipo);
+router.post("/crearmarca", infraestructura_1.crearmarca);
+router.post("/crearmodelo", infraestructura_1.crearmodelo);
+router.post("/crearcliente", infraestructura_1.crearcliente);
+router.post("/crearproveedor", infraestructura_1.crearproveedor);
+exports.default = router;

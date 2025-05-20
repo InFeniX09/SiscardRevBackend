@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const guia_clientes_1 = require("../controllers/Pilotaje/guia-clientes");
+const guia_tecnico_1 = require("../controllers/Pilotaje/guia-tecnico");
+const router = (0, express_1.Router)();
+router.get("/listarClientes", guia_clientes_1.listarClientes);
+router.get("/listarTecnicos", guia_tecnico_1.listarTecnicos);
+router.post("/listarDatosGeneralesTecnicos", guia_tecnico_1.listarDatosGeneralesTecnicos);
+router.post("/listarDatosGestionTecnicos", guia_tecnico_1.listarDatosGestionTecnicos);
+router.post("/listarDatosConexionTecnicos", guia_tecnico_1.listarDatosConexionTecnicos);
+exports.default = router;

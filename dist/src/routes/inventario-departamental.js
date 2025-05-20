@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const inventario_departamental_1 = require("../controllers/inventario-departamental");
+const router = (0, express_1.Router)();
+router.get("/listarMarca", inventario_departamental_1.listarMarca);
+router.get("/listarModelo", inventario_departamental_1.listarModelo);
+router.get("/listarTipoEquipo", inventario_departamental_1.listarTipoEquipo);
+router.get("/listarEquipo", inventario_departamental_1.listarEquipo);
+router.get("/listarEquipoStock", inventario_departamental_1.listarEquipoStock);
+router.get("/listarEquipoControl", inventario_departamental_1.listarEquipoControl);
+router.get("/listarEquipoDescuento", inventario_departamental_1.listarEquipoDescuento);
+exports.default = router;
