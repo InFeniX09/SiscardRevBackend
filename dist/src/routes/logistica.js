@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const pdfkit_1 = __importDefault(require("pdfkit"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 const express_1 = require("express");
 const guia_remision_1 = require("../controllers/Logistica/guia-remision");
 const reporte_sga_1 = require("../controllers/Logistica/reporte-sga");
@@ -28,6 +29,18 @@ const entidad_1 = __importDefault(require("../models/entidad"));
 const express = require("express");
 const ExcelJS = require("exceljs");
 const router = (0, express_1.Router)();
+const transporter = nodemailer_1.default.createTransport({
+    host: "mail.siscardperu.pe",
+    port: 25,
+    secure: false, // NO usar SSL directo en puerto 25
+    auth: {
+        user: "noreply@siscardperu.pe",
+        pass: "S1sc4rdP3ru2019!",
+    },
+    tls: {
+        rejectUnauthorized: false, // ⚠️ Ignora el error del certificado
+    },
+});
 router.get("/listarAlmacenxAlbaranSalida", guia_remision_1.listarAlmacenxAlbaranSalida);
 router.get("/listarAlbaranes", guia_remision_1.listarAlbaranes);
 router.post("/listarDetalleAlbaranSalida", guia_remision_1.listarDetalleAlbaranSalida);
@@ -100,7 +113,12 @@ router.post("/generar-pdf", (req, res) => __awaiter(void 0, void 0, void 0, func
 router.post("/generar-pdf-equipos", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { pdatos, zona, area, comentario, mes, usuario, estado } = req.body;
-        const pdfBytes = yield generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado); // pdfBytes es Uint8Array
+        const email = (yield vw_zonas_1.default.findOne({
+            raw: true,
+            attributes: ["sDsContacto"],
+            where: { zona_id: zona },
+        }));
+        const pdfBytes = yield enviarCorreoConPDFEquipos((email === null || email === void 0 ? void 0 : email.sDsContacto) || "", pdatos, zona, area, comentario, mes, usuario, estado); // pdfBytes es Uint8Array
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader("Content-Disposition", "attachment; filename=PDF.pdf");
         res.setHeader("Content-Length", pdfBytes.length); // recomendable
@@ -189,6 +207,32 @@ function generarPDF(pdatos, pdetalle) {
         });
     });
 }
+function enviarCorreoConPDFEquipos(destinatario, pdatos, zona, area, comentario, mes, usuario, estado) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pdfBuffer = yield generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado);
+        /*try {
+          const info = await transporter.sendMail({
+            from: `"Area de sistemas" <noreply@siscardperu.pe>`,
+            to: destinatario,
+            subject: `Informe de equipos entregados`,
+            text: "Adjunto encontrarás el PDF con los detalles de los equipos.",
+            attachments: [
+              {
+                filename: "informe_equipos.pdf",
+                content: Buffer.from(pdfBuffer),
+                contentType: "application/pdf",
+              },
+            ],
+          });
+      
+          console.log("✅ Correo enviado correctamente:", info.messageId);
+        } catch (error) {
+          console.error("❌ Error al enviar el correo:", error);
+          throw error; // Re-lanzar para que el error sea manejado en el controlador que llama
+        }*/
+        return pdfBuffer;
+    });
+}
 function generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -205,6 +249,7 @@ function generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado)
                     ubicacion_id: item.almacen_id,
                     componente_id: item.componente_id,
                 },
+                order: [["dfcUltMovimiento", "DESC"]], // Aquí se aplica el orden
             })));
             const nombresEquipos = yield Promise.all(pdatos.map((item) => componentes_1.default.findOne({
                 raw: true,
@@ -249,7 +294,7 @@ function generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado)
                 if (fs_1.default.existsSync(imagePathLogo)) {
                     doc.image(imagePathLogo, 480, 10, {
                         width: 100,
-                        height: 60
+                        height: 60,
                     });
                 }
                 else {
@@ -304,14 +349,13 @@ function generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado)
                         const startY1 = y + 100; // posición vertical inicial
                         const rowHeight = 14;
                         const cellWidth = 50;
-                        // Tabla 1: 36→18
                         const col1MesX = 180;
                         const col1ValorX = col1MesX + cellWidth;
-                        doc.fontSize(9).text("Mes (36→18)", col1MesX + 2, startY1 + 3);
+                        doc.fontSize(9).text("Mes (1→18)", col1MesX + 2, startY1 + 3);
                         doc.text("Valor", col1ValorX + 2, startY1 + 3);
                         doc.rect(col1MesX, startY1, cellWidth, rowHeight).stroke();
                         doc.rect(col1ValorX, startY1, cellWidth, rowHeight).stroke();
-                        for (let mes = 36, i = 0; mes >= 18; mes--, i++) {
+                        for (let mes = 1, i = 0; mes <= 18; mes++, i++) {
                             const posY = startY1 + (i + 1) * rowHeight;
                             const valorMes = (precio - descuentoMensual * (mes - 1)).toFixed(2);
                             doc.text(mes.toString(), col1MesX + 5, posY + 3);
@@ -319,14 +363,13 @@ function generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado)
                             doc.rect(col1MesX, posY, cellWidth, rowHeight).stroke();
                             doc.rect(col1ValorX, posY, cellWidth, rowHeight).stroke();
                         }
-                        // Tabla 2: 18→1
                         const col2MesX = 310;
                         const col2ValorX = col2MesX + cellWidth;
-                        doc.fontSize(9).text("Mes (18→1)", col2MesX + 2, startY1 + 3);
+                        doc.fontSize(9).text("Mes (19→36)", col2MesX + 2, startY1 + 3);
                         doc.text("Valor", col2ValorX + 2, startY1 + 3);
                         doc.rect(col2MesX, startY1, cellWidth, rowHeight).stroke();
                         doc.rect(col2ValorX, startY1, cellWidth, rowHeight).stroke();
-                        for (let mes = 18, i = 0; mes >= 1; mes--, i++) {
+                        for (let mes = 19, i = 0; mes <= 36; mes++, i++) {
                             const posY = startY1 + (i + 1) * rowHeight;
                             const valorMes = (precio - descuentoMensual * (mes - 1)).toFixed(2);
                             doc.text(mes.toString(), col2MesX + 5, posY + 3);
@@ -334,6 +377,15 @@ function generarPDFEquipos(pdatos, zona, area, comentario, mes, usuario, estado)
                             doc.rect(col2MesX, posY, cellWidth, rowHeight).stroke();
                             doc.rect(col2ValorX, posY, cellWidth, rowHeight).stroke();
                         }
+                    }
+                    if (componente_id.toUpperCase().includes("SIS-ADP")) {
+                        const precioFormateado = new Intl.NumberFormat("es-PE", {
+                            style: "currency",
+                            currency: "PEN",
+                            minimumFractionDigits: 2,
+                        }).format(precio);
+                        const textfinal = 'Desc: ' + precioFormateado;
+                        doc.text(textfinal, 370, 205);
                     }
                 });
                 /** en base a pdatos, pdatos es array y el componente_id es el que s eva a evaluar IF SIS-CEL SOLO TABLA DE 18 O SIS-LAP 36, ELSE SOLO PRECIO*/
